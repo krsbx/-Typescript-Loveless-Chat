@@ -9,13 +9,15 @@ import {
   TouchableOpacity,
   Keyboard,
   TouchableWithoutFeedback,
+  TextInputContentSizeChangeEventData,
+  NativeSyntheticEvent,
 } from 'react-native';
 import { Avatar, Input } from 'react-native-elements';
 import { auth, database, timestamp } from '../Component/FirebaseSDK';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import ChatElement from '../Component/ChatElement';
-// import PopUpMenu from '../Component/PopupMenu';
-// import ChatPopUp from '../Screens/Pop Up/ChatPopUp';
+import PopUpMenu from '../Component/PopupMenu';
+import ChatPopUp from '../Screens/Pop Up/ChatPopUp';
 
 type MessageType = {
   Nickname: string;
@@ -34,6 +36,7 @@ const ChatScreen = ({ navigation, route }: any) => {
   const [Chat, SetChat] = useState<string>('');
   const [Visible, SetVisible] = useState(false);
   const [Message, SetMessage] = useState<ChatType[]>([]);
+  const [Size, SetSize] = useState<number>(55);
 
   const ScrollRef = useRef<FlatList>(null);
 
@@ -84,14 +87,13 @@ const ChatScreen = ({ navigation, route }: any) => {
           <TouchableOpacity onPress={() => SetVisible((Visible) => !Visible)}>
             <MaterialCommunityIcons name="dots-vertical" size={20} />
           </TouchableOpacity>
-          {/* <PopUpMenu visible={Visible} style={styles.popStyle}>
+          <PopUpMenu visible={Visible} SetVisible={SetVisible}>
             <ChatPopUp
               SetVisible={SetVisible}
               navigation={navigation}
-              CurrentMode={route.params.currentMode}
               params={route.params}
             />
-          </PopUpMenu> */}
+          </PopUpMenu>
         </View>
       ),
     });
@@ -147,6 +149,33 @@ const ChatScreen = ({ navigation, route }: any) => {
     SetChat('');
   };
 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    inputContainer: {
+      flexDirection: 'row',
+      padding: 10,
+      alignItems: 'center',
+      width: '100%',
+      backgroundColor: '#fff',
+      borderTopColor: '#e2e2e2',
+      borderTopWidth: 1,
+    },
+    inputs: {
+      width: '90%',
+      height: Math.min(Math.max(40, Size), 100),
+      bottom: 0,
+      flex: 1,
+      padding: 10,
+      backgroundColor: '#ECECEC',
+      borderRadius: 30,
+    },
+    scrollAble: {
+      backgroundColor: '#fff',
+    },
+  });
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <KeyboardAvoidingView
@@ -183,6 +212,9 @@ const ChatScreen = ({ navigation, route }: any) => {
                 placeholder="Your chats"
                 style={styles.inputs}
                 multiline
+                onContentSizeChange={(
+                  e: NativeSyntheticEvent<TextInputContentSizeChangeEventData>
+                ) => SetSize(e.nativeEvent.contentSize.height)}
               />
               <TouchableOpacity
                 onPress={SendChat}
@@ -202,38 +234,3 @@ const ChatScreen = ({ navigation, route }: any) => {
 };
 
 export default ChatScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    padding: 5,
-    alignItems: 'center',
-    width: '100%',
-    backgroundColor: '#fff',
-    borderTopColor: '#e2e2e2',
-    borderTopWidth: 1,
-  },
-  inputs: {
-    width: '90%',
-    height: 40,
-    bottom: 0,
-    flex: 1,
-    padding: 10,
-    backgroundColor: '#ECECEC',
-    borderRadius: 30,
-  },
-  scrollAble: {
-    backgroundColor: '#fff',
-  },
-  popStyle: {
-    top: '-2.5%',
-    right: '2.5%',
-    width: 200,
-    backgroundColor: 'white',
-    borderColor: '#e2e2e2',
-    borderWidth: 1,
-  },
-});

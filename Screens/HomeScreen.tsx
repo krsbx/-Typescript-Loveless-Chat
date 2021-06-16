@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import {
   StyleSheet,
   View,
+  TextInput,
   TouchableOpacity,
   FlatList,
   SafeAreaView,
-  TouchableWithoutFeedback,
 } from 'react-native';
 import { Avatar, Input } from 'react-native-elements';
 import { auth, database } from '../Component/FirebaseSDK';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons, Entypo, Fontisto } from '@expo/vector-icons';
 import ListChat from '../Component/ListChat';
 import { UseMode } from '../Component/ModeContext';
 import PopUpMenu from '../Component/PopupMenu';
@@ -41,6 +41,8 @@ const HomeScreen = ({ navigation }: any) => {
   const [Visible, SetVisible] = useState(false);
   const [FirstLogin, SetFirstLogin] = useState(true);
   const [SearchParams, SetSearchParams] = useState<string>('');
+
+  const SearchBar = useRef<TextInput>(null);
 
   const IsFocus = useIsFocused();
 
@@ -100,13 +102,13 @@ const HomeScreen = ({ navigation }: any) => {
           <TouchableOpacity onPress={() => SetVisible((Visible) => !Visible)}>
             <MaterialCommunityIcons name="dots-vertical" size={20} />
           </TouchableOpacity>
-          {/* <PopUpMenu visible={Visible} style={styles.popStyle}>
+          <PopUpMenu visible={Visible} SetVisible={SetVisible}>
             <HomePopUp
               SetMode={SetMode}
               SetVisible={SetVisible}
               navigation={navigation}
             />
-          </PopUpMenu> */}
+          </PopUpMenu>
         </View>
       ),
       title: auth.currentUser?.displayName,
@@ -159,40 +161,48 @@ const HomeScreen = ({ navigation }: any) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableWithoutFeedback
-        onPress={() => {
-          SetVisible(false);
-        }}
-      >
-        <View style={{ width: '100%', height: '100%' }}>
-          <Input
-            placeholder="Chats Name"
-            onChangeText={(text: string) => SetSearchParams(text)}
-            value={SearchParams}
-            style={{
-              width: '100%',
-              backgroundColor: '#ECECEC',
-              color: 'black',
-            }}
-            inputStyle={styles.inputStyle}
-            containerStyle={styles.searchContainer}
-          />
-          <FlatList
-            data={Search()}
-            keyExtractor={(item) => item['id']}
-            style={styles.scrollAble}
-            renderItem={({ item }) => (
-              <ListChat
-                id={item['id']}
-                chatName={item['data']['chatName']}
-                chatMode={CurrentMode()}
-                enterChat={EnterChat}
-                SetVisible={SetVisible}
-              />
-            )}
-          />
-        </View>
-      </TouchableWithoutFeedback>
+      <View style={{ width: '100%', height: '100%' }}>
+        <Input
+          ref={SearchBar}
+          placeholder="Chats Name"
+          onChangeText={(text: string) => SetSearchParams(text)}
+          value={SearchParams}
+          style={{
+            width: '100%',
+            backgroundColor: '#ECECEC',
+            color: 'black',
+          }}
+          inputStyle={styles.inputStyle}
+          containerStyle={styles.searchContainer}
+          leftIcon={
+            <TouchableOpacity>
+              <Fontisto name="search" size={24} />
+            </TouchableOpacity>
+          }
+          rightIcon={
+            SearchBar.current?.isFocused() &&
+            SearchParams !== '' && (
+              <TouchableOpacity onPress={() => SetSearchParams('')}>
+                <Entypo name="cross" size={24} />
+              </TouchableOpacity>
+            )
+          }
+        />
+        <FlatList
+          data={Search()}
+          keyExtractor={(item) => item['id']}
+          style={styles.scrollAble}
+          renderItem={({ item }) => (
+            <ListChat
+              id={item['id']}
+              chatName={item['data']['chatName']}
+              chatMode={CurrentMode()}
+              enterChat={EnterChat}
+              SetVisible={SetVisible}
+            />
+          )}
+        />
+      </View>
     </SafeAreaView>
   );
 };
@@ -209,14 +219,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     width: '100%',
   },
-  popStyle: {
-    top: '-2.5%',
-    right: '2.5%',
-    width: 200,
-    backgroundColor: 'white',
-    borderColor: '#e2e2e2',
-    borderWidth: 1,
-  },
-  searchContainer: { backgroundColor: '#fff' },
+  searchContainer: { backgroundColor: '#fff', marginTop: 10 },
   inputStyle: { backgroundColor: '#fff', color: 'black' },
 });

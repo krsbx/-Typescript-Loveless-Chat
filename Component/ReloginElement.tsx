@@ -1,5 +1,11 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, KeyboardAvoidingView, View, Text } from 'react-native';
+import {
+  StyleSheet,
+  KeyboardAvoidingView,
+  View,
+  Text,
+  Modal,
+} from 'react-native';
 import { Input, Button } from 'react-native-elements';
 import { MaterialIcons } from '@expo/vector-icons';
 import { auth } from './FirebaseSDK';
@@ -20,47 +26,6 @@ const ReloginElement = ({ Visible, SetVisible, DeleteAccounts }: ToPass) => {
 
   const LoginSchema = yup.object().shape({
     Password: yup.string().required().min(6),
-  });
-
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: '#000000aa',
-      width: '100%',
-      height: '100%',
-      zIndex: 999,
-      position: 'absolute',
-      display: Visible == true ? 'flex' : 'none',
-    },
-    viewContainer: {
-      width: 300,
-      backgroundColor: '#fff',
-      padding: 10,
-      borderRadius: 10,
-    },
-    inputContainer: {
-      width: '100%',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    button: {
-      width: '100%',
-      padding: 5,
-    },
-    danger: {
-      color: 'red',
-      fontWeight: '500',
-    },
-    inputs: {
-      height: 40,
-      borderWidth: 1,
-      padding: 10,
-      margin: 5,
-      borderColor: 'transparent',
-      backgroundColor: '#ECECEC',
-    },
   });
 
   const Login = async (Password: string) => {
@@ -85,44 +50,90 @@ const ReloginElement = ({ Visible, SetVisible, DeleteAccounts }: ToPass) => {
   }, [Visible]);
 
   return (
-    <KeyboardAvoidingView behavior="height" style={styles.container}>
-      <Formik
-        initialValues={{
-          Password: '',
-        }}
-        validationSchema={LoginSchema}
-        onSubmit={(values) => {
-          Login(values['Password']);
-        }}
-      >
-        {({ handleChange, handleBlur, handleSubmit, values, errors }: any) => (
-          <View style={styles.viewContainer}>
-            <Text>Password</Text>
-            <Input
-              placeholder="Passwords"
-              onChangeText={handleChange('Password')}
-              value={values['Password']}
-              secureTextEntry
-              style={styles.inputs}
-              leftIcon={<MaterialIcons name="lock" size={24} color="black" />}
-              onSubmitEditing={handleSubmit}
-              containerStyle={styles.inputContainer}
-            />
-            {errors['Password'] && (
-              <ErrorElement>{errors['Password']}</ErrorElement>
-            )}
-            <Button
-              title="Delete Accounts!"
-              type="outline"
-              onPress={handleSubmit}
-              containerStyle={styles.button}
-              titleStyle={styles.danger}
-            />
-          </View>
-        )}
-      </Formik>
-    </KeyboardAvoidingView>
+    <Modal visible={Visible} animationType="fade" transparent={true}>
+      <KeyboardAvoidingView behavior="height" style={styles.container}>
+        <Formik
+          initialValues={{
+            Password: '',
+          }}
+          validationSchema={LoginSchema}
+          onSubmit={(values) => {
+            Login(values['Password']);
+          }}
+        >
+          {({
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            values,
+            errors,
+          }: any) => (
+            <View style={styles.viewContainer}>
+              <Text>Password</Text>
+              <Input
+                placeholder="Passwords"
+                onChangeText={handleChange('Password')}
+                value={values['Password']}
+                secureTextEntry
+                style={styles.inputs}
+                leftIcon={<MaterialIcons name="lock" size={24} color="black" />}
+                onSubmitEditing={handleSubmit}
+                containerStyle={styles.inputContainer}
+              />
+              {errors['Password'] && (
+                <ErrorElement>{errors['Password']}</ErrorElement>
+              )}
+              <Button
+                title="Delete Accounts!"
+                type="outline"
+                onPress={handleSubmit}
+                containerStyle={styles.button}
+                titleStyle={styles.danger}
+              />
+            </View>
+          )}
+        </Formik>
+      </KeyboardAvoidingView>
+    </Modal>
   );
 };
 
 export default ReloginElement;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#000000aa',
+    width: '100%',
+    height: '100%',
+  },
+  viewContainer: {
+    width: 300,
+    backgroundColor: '#fff',
+    padding: 10,
+    borderRadius: 10,
+  },
+  inputContainer: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  button: {
+    width: '100%',
+    padding: 5,
+  },
+  danger: {
+    color: 'red',
+    fontWeight: '500',
+  },
+  inputs: {
+    height: 40,
+    borderWidth: 1,
+    padding: 10,
+    margin: 5,
+    borderColor: 'transparent',
+    backgroundColor: '#ECECEC',
+  },
+});
