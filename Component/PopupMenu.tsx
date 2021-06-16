@@ -24,7 +24,7 @@ const PopUpMenu = ({ children, visible, SetVisible }: ToPass) => {
           }}
         >
           <View style={{ width: '100%', height: '100%' }}>
-            <View style={styles.PopUP}>{children}</View>
+            <View style={styles.PopUp}>{children}</View>
           </View>
         </TouchableWithoutFeedback>
       </SafeAreaView>
@@ -43,15 +43,15 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  PopUP: {
-    width: 200,
+  PopUp: {
+    width: 225,
     backgroundColor: '#fff',
     borderRadius: 10,
+    borderWidth: 2,
     padding: 5,
     position: 'absolute',
     right: 15,
     top: 15,
     borderColor: '#e2e2e2',
-    borderWidth: 2,
   },
 });

@@ -7,10 +7,11 @@ import {
   SafeAreaView,
   TouchableOpacity,
 } from 'react-native';
-import { Input } from 'react-native-elements';
+import { Entypo, Fontisto } from '@expo/vector-icons';
 import { auth, database } from '../Component/FirebaseSDK';
 import MemberElement from '../Component/MemberElement';
 import firebase from 'firebase';
+import SearchBar from '../Component/SearchBar';
 
 type FriendsInfo = {
   UID: string;
@@ -195,17 +196,12 @@ const AddMemberScreen = ({ navigation, route }: any) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ width: '100%', height: '100%' }}>
-        <Input
+        <SearchBar
           placeholder="Contacts Name"
-          onChangeText={(text: string) => SetSearchParams(text)}
+          SetValue={SetSearchParams}
           value={SearchParams}
-          style={{
-            width: '100%',
-            backgroundColor: '#ECECEC',
-            color: 'black',
-          }}
-          inputStyle={styles.inputStyle}
-          containerStyle={styles.searchContainer}
+          leftIcon={<Fontisto name="search" size={24} />}
+          rightIcon={<Entypo name="cross" size={24} />}
         />
         <FlatList
           style={{ flex: 1, backgroundColor: '#fff', width: '100%' }}

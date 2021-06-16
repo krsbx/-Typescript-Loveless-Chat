@@ -12,7 +12,7 @@ import { Entypo } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 
 type UserData = {
-  UID: Map<string, string>;
+  UID: Record<string, string>;
 };
 
 type FriendsType = {
@@ -71,7 +71,7 @@ const AddContactScreen = ({ navigation }: any) => {
         const UID: string = auth.currentUser?.uid as string;
 
         const NewFriends: FriendsType = {
-          UID: data.get(Name) as string,
+          UID: data[Name] as string,
           Nickname: Name,
         };
 

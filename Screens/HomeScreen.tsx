@@ -1,13 +1,12 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   View,
-  TextInput,
   TouchableOpacity,
   FlatList,
   SafeAreaView,
 } from 'react-native';
-import { Avatar, Input } from 'react-native-elements';
+import { Avatar } from 'react-native-elements';
 import { auth, database } from '../Component/FirebaseSDK';
 import { MaterialCommunityIcons, Entypo, Fontisto } from '@expo/vector-icons';
 import ListChat from '../Component/ListChat';
@@ -16,6 +15,7 @@ import PopUpMenu from '../Component/PopupMenu';
 import HomePopUp from './Pop Up/HomePopUp';
 import { ContactsCleaner } from '../Utility/ContactsCleaner';
 import { useIsFocused } from '@react-navigation/native';
+import SearchBar from '../Component/SearchBar';
 
 type DocsChat = {
   chatName: string;
@@ -41,8 +41,6 @@ const HomeScreen = ({ navigation }: any) => {
   const [Visible, SetVisible] = useState(false);
   const [FirstLogin, SetFirstLogin] = useState(true);
   const [SearchParams, SetSearchParams] = useState<string>('');
-
-  const SearchBar = useRef<TextInput>(null);
 
   const IsFocus = useIsFocused();
 
@@ -162,31 +160,12 @@ const HomeScreen = ({ navigation }: any) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ width: '100%', height: '100%' }}>
-        <Input
-          ref={SearchBar}
+        <SearchBar
           placeholder="Chats Name"
-          onChangeText={(text: string) => SetSearchParams(text)}
+          SetValue={SetSearchParams}
           value={SearchParams}
-          style={{
-            width: '100%',
-            backgroundColor: '#ECECEC',
-            color: 'black',
-          }}
-          inputStyle={styles.inputStyle}
-          containerStyle={styles.searchContainer}
-          leftIcon={
-            <TouchableOpacity>
-              <Fontisto name="search" size={24} />
-            </TouchableOpacity>
-          }
-          rightIcon={
-            SearchBar.current?.isFocused() &&
-            SearchParams !== '' && (
-              <TouchableOpacity onPress={() => SetSearchParams('')}>
-                <Entypo name="cross" size={24} />
-              </TouchableOpacity>
-            )
-          }
+          leftIcon={<Fontisto name="search" size={24} />}
+          rightIcon={<Entypo name="cross" size={24} />}
         />
         <FlatList
           data={Search()}
@@ -219,6 +198,4 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     width: '100%',
   },
-  searchContainer: { backgroundColor: '#fff', marginTop: 10 },
-  inputStyle: { backgroundColor: '#fff', color: 'black' },
 });
