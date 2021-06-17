@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ListItem, Avatar } from 'react-native-elements';
 import { auth, database } from './FirebaseSDK';
 import { UseMode } from '../Component/ModeContext';
+import { MessageContext } from '../Component/DataInterface';
 
 type ToPass = {
   id: string;
@@ -11,14 +12,6 @@ type ToPass = {
   SetVisible: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-type ChatMessage = {
-  Nickname: string;
-  email: string;
-  message: string;
-  profile: string;
-  timestamp: Date;
-};
-
 const ListChat = ({
   id,
   chatName,
@@ -26,7 +19,7 @@ const ListChat = ({
   enterChat,
   SetVisible,
 }: ToPass) => {
-  const [Chat, SetChat] = useState<ChatMessage[]>([]);
+  const [Chat, SetChat] = useState<MessageContext[]>([]);
 
   const { SetVisibleTab } = UseMode();
 
@@ -40,7 +33,7 @@ const ListChat = ({
       .orderBy('timestamp', 'desc')
       .limit(1)
       .onSnapshot((snap) =>
-        SetChat(snap.docs.map((doc) => doc.data() as ChatMessage))
+        SetChat(snap.docs.map((doc) => doc.data() as MessageContext))
       );
 
     return unsubscribe;

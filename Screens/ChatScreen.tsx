@@ -19,49 +19,18 @@ import ChatElement from '../Component/ChatElement';
 import PopUpMenu from '../Component/PopupMenu';
 import ChatPopUp from '../Screens/Pop Up/ChatPopUp';
 import { sendPushNotification } from '../Component/NotificationsSDK';
-
-type MessageContent = {
-  Nickname: string;
-  email: string;
-  message: string;
-  profile: string;
-  timestamp: any;
-};
-
-type ChatData = {
-  id: string;
-  data: MessageContent;
-};
-
-type UserData = {
-  FullName: string;
-  Nickname: string;
-  Profile: string;
-  UID: string;
-  Token: string;
-};
-
-type ChatMember = {
-  member: Array<string>;
-};
-
-type NotificationContent = {
-  to: string;
-  sound: string;
-  title: string;
-  body: string;
-  data: {
-    id: string;
-    chatName: string;
-    currentMode: string;
-  };
-  icon?: string;
-};
+import {
+  MessageContext,
+  UserInformations,
+  ChatMember,
+  MessageData,
+  NotificationContent,
+} from '../Component/DataInterface';
 
 const ChatScreen = ({ navigation, route }: any) => {
   const [Chat, SetChat] = useState<string>('');
   const [Visible, SetVisible] = useState(false);
-  const [Message, SetMessage] = useState<ChatData[]>([]);
+  const [Message, SetMessage] = useState<MessageData[]>([]);
   const [Size, SetSize] = useState<number>(55);
 
   const ScrollRef = useRef<FlatList>(null);
@@ -136,9 +105,9 @@ const ChatScreen = ({ navigation, route }: any) => {
       .onSnapshot((snap) =>
         SetMessage(
           snap.docs.map((doc) => {
-            const newMsg: ChatData = {
+            const newMsg: MessageData = {
               id: doc.id,
-              data: doc.data() as MessageContent,
+              data: doc.data() as MessageContext,
             };
 
             return newMsg;
@@ -156,7 +125,7 @@ const ChatScreen = ({ navigation, route }: any) => {
   const SendChat = async () => {
     if (Chat === '') return;
 
-    const NewMessage: MessageContent = {
+    const NewMessage: MessageContext = {
       Nickname: auth.currentUser?.displayName as string,
       email: auth.currentUser?.email as string,
       message: Chat,
@@ -182,9 +151,9 @@ const ChatScreen = ({ navigation, route }: any) => {
           .collection(UID)
           .doc('Informations');
 
-        const UserInformations: UserData = (
+        const UserInformations: UserInformations = (
           await UserRef.get()
-        ).data() as UserData;
+        ).data() as UserInformations;
 
         if (
           UserInformations['Token'] !== undefined &&
@@ -201,7 +170,6 @@ const ChatScreen = ({ navigation, route }: any) => {
               chatName: route.params.chatName,
               currentMode: route.params.currentMode,
             },
-            icon: auth.currentUser?.photoURL as string,
           };
 
           sendPushNotification(Notifications);

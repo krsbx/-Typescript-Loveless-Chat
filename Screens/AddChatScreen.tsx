@@ -10,11 +10,7 @@ import { Input, Button } from 'react-native-elements';
 import { auth, database } from '../Component/FirebaseSDK';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
-
-type GroupsContent = {
-  chatName: string;
-  member: Array<string>;
-};
+import { ChatInformations } from '../Component/DataInterface';
 
 const AddChatScreen = ({ navigation }: any) => {
   const [ChatName, setChatName] = useState('');
@@ -49,7 +45,7 @@ const AddChatScreen = ({ navigation }: any) => {
   }, []);
 
   const CreateChat = async () => {
-    const NewChat: GroupsContent = {
+    const NewChat: ChatInformations = {
       chatName: ChatName,
       member: [auth.currentUser?.uid as string],
     };

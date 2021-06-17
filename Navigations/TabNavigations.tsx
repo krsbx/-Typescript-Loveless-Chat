@@ -10,14 +10,10 @@ import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 import { auth, database } from '../Component/FirebaseSDK';
 import { Subscription } from '@unimodules/core';
-
-type UserData = {
-  FullName: string;
-  Nickname: string;
-  Profile: string;
-  UID: string;
-  Token: string;
-};
+import {
+  UserInformations,
+  NewNotificationResponse,
+} from '../Component/DataInterface';
 
 const Tab = createBottomTabNavigator();
 
@@ -57,7 +53,9 @@ const RegisterPushNotifications = async () => {
       .collection(UID)
       .doc('Informations');
 
-    const currentData: UserData = (await UserRef.get()).data() as UserData;
+    const currentData: UserInformations = (
+      await UserRef.get()
+    ).data() as UserInformations;
     const currentToken: string = currentData['Token'];
     console.log(currentToken);
 
@@ -82,29 +80,6 @@ const RegisterPushNotifications = async () => {
   }
 };
 
-interface NewNotificationRequest
-  extends Omit<Notifications.NotificationRequest, 'content'> {
-  content: {
-    sound: string;
-    title: string;
-    body: string;
-    data: {
-      id: string;
-      chatName: string;
-      currentMode: string;
-    };
-  };
-}
-
-interface NotificationData extends Omit<Notifications.Notification, 'request'> {
-  request: NewNotificationRequest;
-}
-
-interface NotificationResponse
-  extends Omit<Notifications.NotificationResponse, 'notification'> {
-  notification: NotificationData;
-}
-
 const TabNav = ({ navigation }: any) => {
   const { VisibleTab } = UseMode();
 
@@ -124,8 +99,8 @@ const TabNav = ({ navigation }: any) => {
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener(
         (response: Notifications.NotificationResponse) => {
-          const NewResponseType: NotificationResponse =
-            response as unknown as NotificationResponse;
+          const NewResponseType: NewNotificationResponse =
+            response as unknown as NewNotificationResponse;
           navigation.navigate('Chat', {
             id: NewResponseType.notification.request.content.data['id'],
             chatName:

@@ -6,13 +6,13 @@ import React, {
   SetStateAction,
 } from 'react';
 
-type ContextType = {
+interface ContextType {
   Mode: boolean;
   SetMode: Dispatch<SetStateAction<boolean>>;
   CurrentMode: any;
   VisibleTab: boolean;
   SetVisibleTab: Dispatch<SetStateAction<boolean>>;
-};
+}
 
 const InitialValues = {
   Mode: false,

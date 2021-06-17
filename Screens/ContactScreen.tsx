@@ -9,21 +9,11 @@ import {
 import ContactElement from '../Component/ContactElement';
 import { auth, database } from '../Component/FirebaseSDK';
 import { Ionicons } from '@expo/vector-icons';
-
-type ContactInformations = {
-  Nickname: string;
-  UID: string;
-  Profile: string;
-};
-
-type ProfileURL = {
-  Profile: string;
-};
-
-type PrivateChatInfos = {
-  chatName: string;
-  member: Array<string>;
-};
+import {
+  ChatInformations,
+  ContactInformations,
+  UserProfileURL,
+} from '../Component/DataInterface';
 
 const ContactScreen = ({ navigation }: any) => {
   const [Contacts, SetContacts] = useState<ContactInformations[]>([]);
@@ -68,8 +58,8 @@ const ContactScreen = ({ navigation }: any) => {
       })
     );
 
-    const FriendsProfile: ProfileURL[] = ProfileResult.filter(
-      (friends: ProfileURL | undefined): friends is ProfileURL => {
+    const FriendsProfile: UserProfileURL[] = ProfileResult.filter(
+      (friends: UserProfileURL | undefined): friends is UserProfileURL => {
         return friends != undefined;
       }
     );
@@ -97,7 +87,7 @@ const ContactScreen = ({ navigation }: any) => {
     const UserNickname: string = auth.currentUser?.displayName as string;
     const UserUID: string = auth.currentUser?.uid as string;
 
-    const NewChat: PrivateChatInfos = {
+    const NewChat: ChatInformations = {
       chatName: `${UserNickname}, ${Nickname}`,
       member: [UserUID, selected],
     };

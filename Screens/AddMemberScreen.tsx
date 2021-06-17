@@ -12,28 +12,15 @@ import { auth, database } from '../Component/FirebaseSDK';
 import MemberElement from '../Component/MemberElement';
 import firebase from 'firebase';
 import SearchBar from '../Component/SearchBar';
-
-type FriendList = {
-  UID: string;
-  Nickname: string;
-};
-
-type UserProfileURL = {
-  Profile: string;
-};
-
-type FriendInformations = {
-  UID: string;
-  Nickname: string;
-  Profile: string;
-};
-
-type GroupsMember = {
-  member: Array<string>;
-};
+import {
+  ContactInformations,
+  ChatMember,
+  UserProfileURL,
+  FriendInformations,
+} from '../Component/DataInterface';
 
 const AddMemberScreen = ({ navigation, route }: any) => {
-  const [Friends, SetFriends] = useState<FriendInformations[]>([]);
+  const [Friends, SetFriends] = useState<ContactInformations[]>([]);
   const [Member, SetMember] = useState<string[]>([]);
   const [Invitations, SetInvitation] = useState<string[]>([]);
   const [SearchParams, SetSearchParams] = useState('');
@@ -50,9 +37,9 @@ const AddMemberScreen = ({ navigation, route }: any) => {
 
     const ContactRes = await ContactRef.get();
 
-    const ConResult: FriendList[] = ContactRes.docs
+    const ConResult: FriendInformations[] = ContactRes.docs
       .map((doc) => {
-        const data: FriendList = doc.data() as FriendList;
+        const data: FriendInformations = doc.data() as FriendInformations;
 
         if (data['UID'] != undefined) {
           return {
@@ -61,9 +48,13 @@ const AddMemberScreen = ({ navigation, route }: any) => {
           };
         }
       })
-      .filter((friend: FriendList | undefined): friend is FriendList => {
-        return friend !== undefined;
-      });
+      .filter(
+        (
+          friend: FriendInformations | undefined
+        ): friend is FriendInformations => {
+          return friend !== undefined;
+        }
+      );
 
     const ProfileResult = await Promise.all(
       ConResult.map(async (contact) => {
@@ -105,13 +96,13 @@ const AddMemberScreen = ({ navigation, route }: any) => {
       .collection('Groups')
       .doc(route.params.id);
 
-    const MemberRes = (await MemberRef.get()).data() as GroupsMember;
+    const MemberRes = (await MemberRef.get()).data() as ChatMember;
 
     SetMember(MemberRes['member']);
   };
 
   const Search = () => {
-    return Friends.filter((contacts: FriendInformations) => {
+    return Friends.filter((contacts: ContactInformations) => {
       if (Member.includes(contacts['UID'])) {
         return null;
       } else if (SearchParams == '') {
@@ -125,12 +116,12 @@ const AddMemberScreen = ({ navigation, route }: any) => {
     })
       .filter(
         (
-          contacts: FriendInformations | undefined
-        ): contacts is FriendInformations => {
+          contacts: ContactInformations | undefined
+        ): contacts is ContactInformations => {
           return contacts != null;
         }
       )
-      .map((contacts: FriendInformations) => {
+      .map((contacts: ContactInformations) => {
         return contacts;
       });
   };

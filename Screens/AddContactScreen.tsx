@@ -10,15 +10,7 @@ import { Input, Button } from 'react-native-elements';
 import { auth, database } from '../Component/FirebaseSDK';
 import { Entypo } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
-
-type ListUserID = {
-  UID: Record<string, string>;
-};
-
-type FriendsContent = {
-  Nickname: string;
-  UID: string;
-};
+import { ListUser, FriendInformations } from '../Component/DataInterface';
 
 const AddContactScreen = ({ navigation }: any) => {
   const [Name, setName] = useState<string>('');
@@ -75,7 +67,7 @@ const AddContactScreen = ({ navigation }: any) => {
       const AllFriends = await FriendsRef.get();
 
       AllFriends.docs.forEach((doc) => {
-        const Friends: FriendsContent = doc.data() as FriendsContent;
+        const Friends: FriendInformations = doc.data() as FriendInformations;
 
         if (Friends['UID'] && Friends['Nickname'] === Name) {
           Exist = true;
@@ -89,12 +81,12 @@ const AddContactScreen = ({ navigation }: any) => {
         return;
       }
 
-      const userSnap: ListUserID = (await userRef.get()).data() as ListUserID;
+      const userSnap: ListUser = (await userRef.get()).data() as ListUser;
 
       const data = userSnap['UID'];
 
       if (data.hasOwnProperty(Name)) {
-        const NewFriends: FriendsContent = {
+        const NewFriends: FriendInformations = {
           UID: data[Name] as string,
           Nickname: Name,
         };

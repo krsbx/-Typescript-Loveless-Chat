@@ -10,14 +10,7 @@ import { Avatar, Button } from 'react-native-elements';
 import { auth, database } from '../Component/FirebaseSDK';
 import { useIsFocused } from '@react-navigation/native';
 import { UseMode } from '../Component/ModeContext';
-
-type UserData = {
-  FullName: string;
-  Nickname: string;
-  Profile: string;
-  UID: string;
-  Token: string;
-};
+import { UserInformations } from '../Component/DataInterface';
 
 const ProfileScreens = ({ navigation }: any) => {
   const { SetVisibleTab } = UseMode();
@@ -39,7 +32,9 @@ const ProfileScreens = ({ navigation }: any) => {
       .collection(UID)
       .doc('Informations');
 
-    const ProfileRes: UserData = (await ProfileRef.get()).data() as UserData;
+    const ProfileRes: UserInformations = (
+      await ProfileRef.get()
+    ).data() as UserInformations;
 
     SetFullName(ProfileRes['FullName']);
   };

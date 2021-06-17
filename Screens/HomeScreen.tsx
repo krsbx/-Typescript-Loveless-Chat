@@ -16,19 +16,10 @@ import HomePopUp from './Pop Up/HomePopUp';
 import { ContactsCleaner } from '../Utility/ContactsCleaner';
 import { useIsFocused } from '@react-navigation/native';
 import SearchBar from '../Component/SearchBar';
-
-type DocsChat = {
-  chatName: string;
-  member: Array<string>;
-};
-
-type ChatInformations = {
-  id: string;
-  data: DocsChat;
-};
+import { ChatCollections, ChatInformations } from '../Component/DataInterface';
 
 const HomeScreen = ({ navigation }: any) => {
-  const [Chat, SetChat] = useState<ChatInformations[]>([]);
+  const [Chat, SetChat] = useState<ChatCollections[]>([]);
   const [Visible, SetVisible] = useState(false);
   const [FirstLogin, SetFirstLogin] = useState(true);
   const [SearchParams, SetSearchParams] = useState<string>('');
@@ -51,7 +42,7 @@ const HomeScreen = ({ navigation }: any) => {
   };
 
   const Search = () => {
-    return Chat.filter((chat: ChatInformations) => {
+    return Chat.filter((chat: ChatCollections) => {
       if (SearchParams == '') {
         return chat;
       } else if (
@@ -114,7 +105,7 @@ const HomeScreen = ({ navigation }: any) => {
         SetChat(
           snap.docs
             .map((doc) => {
-              const data: DocsChat = doc.data() as DocsChat;
+              const data: ChatInformations = doc.data() as ChatInformations;
 
               if (data['member'] !== undefined) {
                 const IsMember = data['member'].includes(UID);
@@ -128,8 +119,8 @@ const HomeScreen = ({ navigation }: any) => {
             })
             .filter(
               (
-                chats: ChatInformations | undefined
-              ): chats is ChatInformations => {
+                chats: ChatCollections | undefined
+              ): chats is ChatCollections => {
                 return chats != undefined;
               }
             )

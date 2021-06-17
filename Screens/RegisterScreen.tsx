@@ -16,14 +16,7 @@ import { CreateBlob } from '../Utility/Utility';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import ErrorElement from '../Component/ErrorElement';
-
-type UserData = {
-  FullName: string;
-  Nickname: string;
-  Profile: string;
-  UID: string;
-  Token: string;
-};
+import { UserInformations } from '../Component/DataInterface';
 
 const RegisterScreen = () => {
   const [Profile, setProfile] = useState<string>('');
@@ -95,7 +88,7 @@ const RegisterScreen = () => {
         ProfileUrl = PicturesUrl;
       }
 
-      const UserInformations: UserData = {
+      const UserInformations: UserInformations = {
         Nickname: Nickname,
         UID: UID,
         Profile: ProfileUrl,

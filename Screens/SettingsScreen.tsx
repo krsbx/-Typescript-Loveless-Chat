@@ -15,6 +15,7 @@ import { CreateBlob } from '../Utility/Utility';
 import ErrorElement from '../Component/ErrorElement';
 import firebase from 'firebase';
 import ReloginElement from '../Component/ReloginElement';
+import { ChatMember } from '../Component/DataInterface';
 
 type UserData = {
   FullName?: string;
@@ -22,10 +23,6 @@ type UserData = {
   Profile?: string;
   UID?: string;
   Token?: string;
-};
-
-type Member = {
-  member: Array<string>;
 };
 
 const SettingsScreen = ({ navigation }: any) => {
@@ -156,7 +153,7 @@ const SettingsScreen = ({ navigation }: any) => {
       //Remove Member in Groups
       GroupsRef.onSnapshot(async (snap) => {
         snap.docs.forEach(async (doc) => {
-          const data: Member = doc.data() as Member;
+          const data: ChatMember = doc.data() as ChatMember;
 
           if (data['member'] !== undefined) {
             const IsMember = data['member'].includes(UID);
@@ -172,7 +169,7 @@ const SettingsScreen = ({ navigation }: any) => {
       //Remove Member in Private
       PrivateRef.onSnapshot(async (snap) => {
         snap.docs.forEach(async (doc) => {
-          const data: Member = doc.data() as Member;
+          const data: ChatMember = doc.data() as ChatMember;
 
           if (data['member'] !== undefined) {
             const IsMember = data['member'].includes(UID);

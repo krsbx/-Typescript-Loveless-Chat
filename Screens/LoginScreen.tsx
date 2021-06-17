@@ -11,11 +11,7 @@ import { auth } from '../Component/FirebaseSDK';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import ErrorElement from '../Component/ErrorElement';
-
-type LoginForm = {
-  Email: string;
-  Password: string;
-};
+import { LoginForm } from '../Component/DataInterface';
 
 const LoginScreen = ({ navigation }: any) => {
   const [Request, SetRequest] = useState(false);

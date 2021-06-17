@@ -1,19 +1,11 @@
 import { auth, database } from '../Component/FirebaseSDK';
-
-type UserEntry = {
-  UID: Map<string, string>;
-};
-
-type ContactsEntry = {
-  Nickname: string;
-  UID: string;
-};
+import { ListUser, FriendInformations } from '../Component/DataInterface';
 
 //One time calls each logins
 export const ContactsCleaner = async () => {
   //All User Ref
   const UserRef = database.collection('Database').doc('Users');
-  const UserData: UserEntry = (await UserRef.get()).data() as UserEntry;
+  const UserData: ListUser = (await UserRef.get()).data() as ListUser;
 
   if (UserData['UID'] !== undefined) {
     const UID: any = auth.currentUser?.uid;
@@ -29,9 +21,9 @@ export const ContactsCleaner = async () => {
     //Clean unnecessary contacts
     const unsubscribe = ContactsRef.onSnapshot(async (snap) => {
       snap.docs.forEach(async (doc) => {
-        const Data: ContactsEntry = (
+        const Data: FriendInformations = (
           await ContactsRef.doc(doc.id).get()
-        ).data() as ContactsEntry;
+        ).data() as FriendInformations;
 
         if (Data['UID'] !== undefined) {
           const UserID: string = Data['UID'];
