@@ -11,7 +11,7 @@ import { auth, database } from '../Component/FirebaseSDK';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 
-type GroupType = {
+type GroupsContent = {
   chatName: string;
   member: Array<string>;
 };
@@ -49,7 +49,7 @@ const AddChatScreen = ({ navigation }: any) => {
   }, []);
 
   const CreateChat = async () => {
-    const NewChat: GroupType = {
+    const NewChat: GroupsContent = {
       chatName: ChatName,
       member: [auth.currentUser?.uid as string],
     };

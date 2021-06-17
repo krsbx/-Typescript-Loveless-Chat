@@ -51,7 +51,7 @@ const ReloginElement = ({ Visible, SetVisible, DeleteAccounts }: ToPass) => {
 
   return (
     <Modal visible={Visible} animationType="fade" transparent={true}>
-      <KeyboardAvoidingView behavior="height" style={styles.container}>
+      <KeyboardAvoidingView style={styles.container}>
         <Formik
           initialValues={{
             Password: '',

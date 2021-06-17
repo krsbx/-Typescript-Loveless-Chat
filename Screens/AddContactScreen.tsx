@@ -11,13 +11,13 @@ import { auth, database } from '../Component/FirebaseSDK';
 import { Entypo } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 
-type UserData = {
+type ListUserID = {
   UID: Record<string, string>;
 };
 
-type FriendsType = {
-  UID: string;
+type FriendsContent = {
   Nickname: string;
+  UID: string;
 };
 
 const AddContactScreen = ({ navigation }: any) => {
@@ -61,16 +61,40 @@ const AddContactScreen = ({ navigation }: any) => {
     SetRequest(true);
 
     try {
+      const UID: string = auth.currentUser?.uid as string;
+
       const userRef = database.collection('Database').doc('Users');
 
-      const userSnap: UserData = (await userRef.get()).data() as UserData;
+      const FriendsRef = userRef
+        .collection(UID)
+        .doc('Contacts')
+        .collection('Friends');
+
+      let Exist = false;
+
+      const AllFriends = await FriendsRef.get();
+
+      AllFriends.docs.forEach((doc) => {
+        const Friends: FriendsContent = doc.data() as FriendsContent;
+
+        if (Friends['UID'] && Friends['Nickname'] === Name) {
+          Exist = true;
+          return;
+        }
+      });
+
+      if (Exist) {
+        SetRequest(false);
+
+        return;
+      }
+
+      const userSnap: ListUserID = (await userRef.get()).data() as ListUserID;
 
       const data = userSnap['UID'];
 
       if (data.hasOwnProperty(Name)) {
-        const UID: string = auth.currentUser?.uid as string;
-
-        const NewFriends: FriendsType = {
+        const NewFriends: FriendsContent = {
           UID: data[Name] as string,
           Nickname: Name,
         };

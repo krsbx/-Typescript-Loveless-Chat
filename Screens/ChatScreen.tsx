@@ -19,7 +19,7 @@ import ChatElement from '../Component/ChatElement';
 import PopUpMenu from '../Component/PopupMenu';
 import ChatPopUp from '../Screens/Pop Up/ChatPopUp';
 
-type MessageType = {
+type MessageContent = {
   Nickname: string;
   email: string;
   message: string;
@@ -27,15 +27,15 @@ type MessageType = {
   timestamp: any;
 };
 
-type ChatType = {
+type ChatData = {
   id: string;
-  data: MessageType;
+  data: MessageContent;
 };
 
 const ChatScreen = ({ navigation, route }: any) => {
   const [Chat, SetChat] = useState<string>('');
   const [Visible, SetVisible] = useState(false);
-  const [Message, SetMessage] = useState<ChatType[]>([]);
+  const [Message, SetMessage] = useState<ChatData[]>([]);
   const [Size, SetSize] = useState<number>(55);
 
   const ScrollRef = useRef<FlatList>(null);
@@ -110,9 +110,9 @@ const ChatScreen = ({ navigation, route }: any) => {
       .onSnapshot((snap) =>
         SetMessage(
           snap.docs.map((doc) => {
-            const newMsg: ChatType = {
+            const newMsg: ChatData = {
               id: doc.id,
-              data: doc.data() as MessageType,
+              data: doc.data() as MessageContent,
             };
 
             return newMsg;
@@ -130,7 +130,7 @@ const ChatScreen = ({ navigation, route }: any) => {
   const SendChat = async () => {
     if (Chat === '') return;
 
-    const NewMessage: MessageType = {
+    const NewMessage: MessageContent = {
       Nickname: auth.currentUser?.displayName as string,
       email: auth.currentUser?.email as string,
       message: Chat,
@@ -178,11 +178,7 @@ const ChatScreen = ({ navigation, route }: any) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <KeyboardAvoidingView
-        behavior="height"
-        style={styles.container}
-        keyboardVerticalOffset={30}
-      >
+      <KeyboardAvoidingView style={styles.container}>
         <TouchableWithoutFeedback
           onPress={() => {
             Keyboard.dismiss();

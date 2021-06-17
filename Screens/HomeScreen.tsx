@@ -22,22 +22,13 @@ type DocsChat = {
   member: Array<string>;
 };
 
-type ChatType = {
+type ChatInformations = {
   id: string;
   data: DocsChat;
 };
 
-type LastChatType = {
-  Nickname: string;
-  email: string;
-  message: string;
-  profile: string;
-  timestamp: Date;
-};
-
 const HomeScreen = ({ navigation }: any) => {
-  const [Chat, SetChat] = useState<ChatType[]>([]);
-  const [LastChat, SetLastChat] = useState<any[]>([]);
+  const [Chat, SetChat] = useState<ChatInformations[]>([]);
   const [Visible, SetVisible] = useState(false);
   const [FirstLogin, SetFirstLogin] = useState(true);
   const [SearchParams, SetSearchParams] = useState<string>('');
@@ -60,7 +51,7 @@ const HomeScreen = ({ navigation }: any) => {
   };
 
   const Search = () => {
-    return Chat.filter((chat: ChatType) => {
+    return Chat.filter((chat: ChatInformations) => {
       if (SearchParams == '') {
         return chat;
       } else if (
@@ -135,9 +126,13 @@ const HomeScreen = ({ navigation }: any) => {
                 }
               }
             })
-            .filter((chats: ChatType | undefined): chats is ChatType => {
-              return chats != undefined;
-            })
+            .filter(
+              (
+                chats: ChatInformations | undefined
+              ): chats is ChatInformations => {
+                return chats != undefined;
+              }
+            )
         );
       });
 

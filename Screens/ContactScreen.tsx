@@ -10,23 +10,23 @@ import ContactElement from '../Component/ContactElement';
 import { auth, database } from '../Component/FirebaseSDK';
 import { Ionicons } from '@expo/vector-icons';
 
-type ContactType = {
+type ContactInformations = {
   Nickname: string;
   UID: string;
   Profile: string;
 };
 
-type ProfileType = {
+type ProfileURL = {
   Profile: string;
 };
 
-type PrivateType = {
+type PrivateChatInfos = {
   chatName: string;
   member: Array<string>;
 };
 
 const ContactScreen = ({ navigation }: any) => {
-  const [Contacts, SetContacts] = useState<ContactType[]>([]);
+  const [Contacts, SetContacts] = useState<ContactInformations[]>([]);
 
   const GetContacts = async () => {
     const UID: string = auth.currentUser?.uid as string;
@@ -56,9 +56,9 @@ const ContactScreen = ({ navigation }: any) => {
           .collection(contact['UID'])
           .doc('Informations');
 
-        const UserSnap: ContactType = (
+        const UserSnap: ContactInformations = (
           await UserRef.get()
-        ).data() as ContactType;
+        ).data() as ContactInformations;
 
         if (UserSnap['Profile'] !== undefined) {
           return {
@@ -68,8 +68,8 @@ const ContactScreen = ({ navigation }: any) => {
       })
     );
 
-    const FriendsProfile: ProfileType[] = ProfileResult.filter(
-      (friends: ProfileType | undefined): friends is ProfileType => {
+    const FriendsProfile: ProfileURL[] = ProfileResult.filter(
+      (friends: ProfileURL | undefined): friends is ProfileURL => {
         return friends != undefined;
       }
     );
@@ -97,7 +97,7 @@ const ContactScreen = ({ navigation }: any) => {
     const UserNickname: string = auth.currentUser?.displayName as string;
     const UserUID: string = auth.currentUser?.uid as string;
 
-    const NewChat: PrivateType = {
+    const NewChat: PrivateChatInfos = {
       chatName: `${UserNickname}, ${Nickname}`,
       member: [UserUID, selected],
     };

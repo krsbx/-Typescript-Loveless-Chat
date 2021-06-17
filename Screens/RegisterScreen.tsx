@@ -138,7 +138,7 @@ const RegisterScreen = () => {
   }, []);
 
   return (
-    <KeyboardAvoidingView behavior="height" style={styles.container}>
+    <KeyboardAvoidingView style={styles.container}>
       <Formik
         initialValues={{
           Nickname: '',

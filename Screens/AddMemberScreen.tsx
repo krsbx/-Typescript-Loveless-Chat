@@ -13,27 +13,27 @@ import MemberElement from '../Component/MemberElement';
 import firebase from 'firebase';
 import SearchBar from '../Component/SearchBar';
 
-type FriendsInfo = {
+type FriendList = {
   UID: string;
   Nickname: string;
 };
 
-type ProfileType = {
+type UserProfileURL = {
   Profile: string;
 };
 
-type Friends = {
+type FriendInformations = {
   UID: string;
   Nickname: string;
   Profile: string;
 };
 
-type MemberType = {
+type GroupsMember = {
   member: Array<string>;
 };
 
 const AddMemberScreen = ({ navigation, route }: any) => {
-  const [Friends, SetFriends] = useState<Friends[]>([]);
+  const [Friends, SetFriends] = useState<FriendInformations[]>([]);
   const [Member, SetMember] = useState<string[]>([]);
   const [Invitations, SetInvitation] = useState<string[]>([]);
   const [SearchParams, SetSearchParams] = useState('');
@@ -50,9 +50,9 @@ const AddMemberScreen = ({ navigation, route }: any) => {
 
     const ContactRes = await ContactRef.get();
 
-    const ConResult: FriendsInfo[] = ContactRes.docs
+    const ConResult: FriendList[] = ContactRes.docs
       .map((doc) => {
-        const data: FriendsInfo = doc.data() as FriendsInfo;
+        const data: FriendList = doc.data() as FriendList;
 
         if (data['UID'] != undefined) {
           return {
@@ -61,7 +61,7 @@ const AddMemberScreen = ({ navigation, route }: any) => {
           };
         }
       })
-      .filter((friend: FriendsInfo | undefined): friend is FriendsInfo => {
+      .filter((friend: FriendList | undefined): friend is FriendList => {
         return friend !== undefined;
       });
 
@@ -73,9 +73,9 @@ const AddMemberScreen = ({ navigation, route }: any) => {
           .collection(contact['UID'])
           .doc('Informations');
 
-        const UserSnap: ProfileType = (
+        const UserSnap: UserProfileURL = (
           await UserRef.get()
-        ).data() as ProfileType;
+        ).data() as UserProfileURL;
 
         if (UserSnap !== undefined) {
           return {
@@ -85,8 +85,8 @@ const AddMemberScreen = ({ navigation, route }: any) => {
       })
     );
 
-    const ProfileURL: ProfileType[] = ProfileResult.filter(
-      (profile: ProfileType | undefined): profile is ProfileType => {
+    const ProfileURL: UserProfileURL[] = ProfileResult.filter(
+      (profile: UserProfileURL | undefined): profile is UserProfileURL => {
         return profile !== undefined;
       }
     );
@@ -105,29 +105,33 @@ const AddMemberScreen = ({ navigation, route }: any) => {
       .collection('Groups')
       .doc(route.params.id);
 
-    const MemberRes = (await MemberRef.get()).data() as MemberType;
+    const MemberRes = (await MemberRef.get()).data() as GroupsMember;
 
     SetMember(MemberRes['member']);
   };
 
   const Search = () => {
-    return Friends.filter((f) => {
-      if (Member.includes(f['UID'])) {
+    return Friends.filter((contacts: FriendInformations) => {
+      if (Member.includes(contacts['UID'])) {
         return null;
       } else if (SearchParams == '') {
-        return f;
+        return contacts;
       } else if (
         SearchParams !== undefined &&
-        f['Nickname'].toLowerCase().includes(SearchParams.toLowerCase())
+        contacts['Nickname'].toLowerCase().includes(SearchParams.toLowerCase())
       ) {
-        return f;
+        return contacts;
       }
     })
-      .filter((f) => {
-        return f != null;
-      })
-      .map((f) => {
-        return f;
+      .filter(
+        (
+          contacts: FriendInformations | undefined
+        ): contacts is FriendInformations => {
+          return contacts != null;
+        }
+      )
+      .map((contacts: FriendInformations) => {
+        return contacts;
       });
   };
 

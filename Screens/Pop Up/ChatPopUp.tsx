@@ -4,7 +4,7 @@ import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import { auth, database } from '../../Component/FirebaseSDK';
 import firebase from 'firebase';
 
-type ParamsType = {
+type Params = {
   id: string;
   chatName: string;
   currentMode: string;
@@ -13,7 +13,7 @@ type ParamsType = {
 type ToPass = {
   SetVisible: React.Dispatch<React.SetStateAction<boolean>>;
   navigation: any;
-  params: ParamsType;
+  params: Params;
 };
 
 const ChatPopUp = ({ SetVisible, navigation, params }: ToPass) => {
