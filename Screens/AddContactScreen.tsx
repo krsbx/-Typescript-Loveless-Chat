@@ -45,6 +45,8 @@ const AddContactScreen = ({ navigation }: any) => {
     NameRef.current?.focus();
   }, []);
 
+  //Add other users informations to Contacts/Friends Sections
+  //  If no name/current user name => Dont proceed
   const AddContact = async () => {
     if (Name === undefined) return;
 
@@ -69,6 +71,8 @@ const AddContactScreen = ({ navigation }: any) => {
       AllFriends.docs.forEach((doc) => {
         const Friends: FriendInformations = doc.data() as FriendInformations;
 
+        //Check if the current input already exist
+        //  If exists dont proceed
         if (Friends['UID'] && Friends['Nickname'] === Name) {
           Exist = true;
           return;
@@ -81,10 +85,13 @@ const AddContactScreen = ({ navigation }: any) => {
         return;
       }
 
+      //Get All user UID
       const userSnap: ListUser = (await userRef.get()).data() as ListUser;
 
       const data = userSnap['UID'];
 
+      //If the users exists
+      //  Add the users informations to Contact/Friends Sections
       if (data.hasOwnProperty(Name)) {
         const NewFriends: FriendInformations = {
           UID: data[Name] as string,

@@ -44,6 +44,8 @@ const AddChatScreen = ({ navigation }: any) => {
     ChatNameRef.current?.focus();
   }, []);
 
+  //Create New Chat Entry in Group Sections
+  //  Each creations => 1 Member (Users who created the groups)
   const CreateChat = async () => {
     const NewChat: ChatInformations = {
       chatName: ChatName,

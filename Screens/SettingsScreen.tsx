@@ -229,6 +229,8 @@ const SettingsScreen = ({ navigation }: any) => {
     );
     const date = new Date();
 
+    //If use last sign in time is more than 5 minutes
+    //  Ask the users for new logins (Use Relogin Element)
     if (date.getTime() - metadata.getTime() > 5 * 60 * 1000) {
       SetError('Please Relogin!');
       SetShowAuth(true);

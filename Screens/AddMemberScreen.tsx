@@ -22,9 +22,11 @@ import {
 const AddMemberScreen = ({ navigation, route }: any) => {
   const [Friends, SetFriends] = useState<ContactInformations[]>([]);
   const [Member, SetMember] = useState<string[]>([]);
-  const [Invitations, SetInvitation] = useState<string[]>([]);
+  const Invitations: string[] = [];
   const [SearchParams, SetSearchParams] = useState('');
 
+  //Get current user list of friends
+  //...Get current groups list of members
   const GetFriendsMember = async () => {
     const UID = auth.currentUser?.uid as string;
 
@@ -102,6 +104,8 @@ const AddMemberScreen = ({ navigation, route }: any) => {
   };
 
   const Search = () => {
+    //Filter if friends in the groups or not
+    //  Filter to remove undefined data
     return Friends.filter((contacts: ContactInformations) => {
       if (Member.includes(contacts['UID'])) {
         return null;
@@ -135,6 +139,7 @@ const AddMemberScreen = ({ navigation, route }: any) => {
   };
 
   const Invites = async () => {
+    //Update group member with new selected member
     try {
       const MemberRef = database
         .collection('Database')
