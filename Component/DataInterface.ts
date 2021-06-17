@@ -39,7 +39,8 @@ export interface UserInformations {
 export interface MessageContext {
   Nickname: string;
   email: string;
-  message: string;
+  message?: string;
+  picture?: string;
   profile: string;
   timestamp: any;
 }

@@ -43,7 +43,6 @@ const RegisterPushNotifications = async () => {
     }
 
     const token = (await Notifications.getExpoPushTokenAsync()).data;
-    console.log(token);
 
     const UID: string = auth.currentUser?.uid as string;
 
@@ -57,7 +56,6 @@ const RegisterPushNotifications = async () => {
       await UserRef.get()
     ).data() as UserInformations;
     const currentToken: string = currentData['Token'];
-    console.log(currentToken);
 
     if (token && currentToken !== token) {
       await UserRef.update({

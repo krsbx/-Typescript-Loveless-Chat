@@ -116,10 +116,6 @@ const RegisterScreen = () => {
     NameRef.current?.focus();
   }, []);
 
-  useEffect(() => {
-    console.log(Profile);
-  }, [Profile]);
-
   return (
     <KeyboardAvoidingView style={styles.container}>
       <Formik
@@ -136,7 +132,7 @@ const RegisterScreen = () => {
         {({ handleChange, handleBlur, handleSubmit, values, errors }: any) => (
           <View style={styles.viewContainer}>
             <TouchableOpacity
-              onPress={() => SelectPicture(setProfile)}
+              onPress={() => SelectPicture(setProfile, true)}
               activeOpacity={0.8}
               style={{
                 flex: 1,

@@ -280,7 +280,7 @@ const SettingsScreen = ({ navigation }: any) => {
             }}
           >
             <TouchableOpacity
-              onPress={() => SelectPicture(SetNewPhoto)}
+              onPress={() => SelectPicture(SetNewPhoto, true)}
               activeOpacity={0.8}
               style={{
                 justifyContent: 'center',

@@ -20,7 +20,6 @@ const PopUpMenu = ({ children, visible, SetVisible }: ToPass) => {
         <TouchableWithoutFeedback
           onPress={() => {
             SetVisible(false);
-            console.log('Damn');
           }}
         >
           <View style={{ width: '100%', height: '100%' }}>
