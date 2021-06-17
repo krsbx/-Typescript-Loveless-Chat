@@ -8,7 +8,6 @@ import {
   Platform,
 } from 'react-native';
 import { Input, Button, Avatar } from 'react-native-elements';
-import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { auth, database, storage } from '../Component/FirebaseSDK';
 import { CreateBlob } from '../Utility/Utility';
@@ -16,6 +15,7 @@ import ErrorElement from '../Component/ErrorElement';
 import firebase from 'firebase';
 import ReloginElement from '../Component/ReloginElement';
 import { ChatMember } from '../Component/DataInterface';
+import { SelectPicture, AskPermission } from '../Utility/ImagePicker';
 
 type UserData = {
   FullName?: string;
@@ -51,30 +51,6 @@ const SettingsScreen = ({ navigation }: any) => {
     SetFullName(ProfileRes['FullName'] as string);
     SetNewFullName(ProfileRes['FullName'] as string);
     SetPhotoURL(ProfileRes['Profile'] as string);
-  };
-
-  const SelectPicture = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [3, 3],
-      quality: 0.5,
-      base64: true,
-    });
-
-    if (!result.cancelled) {
-      SetNewPhoto(result.uri);
-    }
-  };
-
-  const AskPermission = async () => {
-    if (Platform.OS === 'web') {
-      const { status } = await ImagePicker.getMediaLibraryPermissionsAsync();
-
-      if (status !== 'granted') {
-        alert('We need permission for your media library');
-      }
-    }
   };
 
   const UpdateFullName = async () => {
@@ -151,7 +127,7 @@ const SettingsScreen = ({ navigation }: any) => {
       const PrivateRef = ChatRef.collection('Private');
 
       //Remove Member in Groups
-      GroupsRef.onSnapshot(async (snap) => {
+      const UnsubsGroup = GroupsRef.onSnapshot(async (snap) => {
         snap.docs.forEach(async (doc) => {
           const data: ChatMember = doc.data() as ChatMember;
 
@@ -167,7 +143,7 @@ const SettingsScreen = ({ navigation }: any) => {
       });
 
       //Remove Member in Private
-      PrivateRef.onSnapshot(async (snap) => {
+      const UnsubsPrivate = PrivateRef.onSnapshot(async (snap) => {
         snap.docs.forEach(async (doc) => {
           const data: ChatMember = doc.data() as ChatMember;
 
@@ -189,7 +165,7 @@ const SettingsScreen = ({ navigation }: any) => {
         .collection(UID);
 
       //Remove Friends
-      ProfileRef.doc('Contacts')
+      const UnsubsFriends = ProfileRef.doc('Contacts')
         .collection('Friends')
         .onSnapshot(async (snap) => {
           snap.docs.forEach(async (doc) => {
@@ -215,6 +191,10 @@ const SettingsScreen = ({ navigation }: any) => {
       await UserRef.update(toUpdate);
 
       await auth.currentUser?.delete().then(() => {
+        UnsubsGroup();
+        UnsubsPrivate();
+        UnsubsFriends();
+
         navigation.replace('Login');
       });
     } catch (error) {
@@ -300,7 +280,7 @@ const SettingsScreen = ({ navigation }: any) => {
             }}
           >
             <TouchableOpacity
-              onPress={SelectPicture}
+              onPress={() => SelectPicture(SetNewPhoto)}
               activeOpacity={0.8}
               style={{
                 justifyContent: 'center',

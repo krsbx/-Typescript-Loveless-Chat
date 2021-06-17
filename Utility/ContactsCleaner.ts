@@ -35,6 +35,8 @@ export const ContactsCleaner = async () => {
       });
     });
 
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+    };
   }
 };

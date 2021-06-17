@@ -115,8 +115,10 @@ const ChatScreen = ({ navigation, route }: any) => {
         )
       );
 
-    return unsubscribe;
-  }, [route]);
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   const ScrollToEnd = () => {
     ScrollRef.current?.scrollToEnd({ animated: true });

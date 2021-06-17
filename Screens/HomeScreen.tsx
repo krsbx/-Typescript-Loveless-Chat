@@ -94,6 +94,13 @@ const HomeScreen = ({ navigation }: any) => {
       title: auth.currentUser?.displayName,
       headerTitleStyle: { fontWeight: '800' },
     });
+  }, [Visible, Mode]);
+
+  useEffect(() => {
+    if (FirstLogin) {
+      ContactsCleaner();
+      SetFirstLogin(false);
+    }
 
     const UID: string = auth.currentUser?.uid as string;
 
@@ -127,14 +134,9 @@ const HomeScreen = ({ navigation }: any) => {
         );
       });
 
-    return unsubscribe;
-  }, [Visible, Mode]);
-
-  useEffect(() => {
-    if (FirstLogin) {
-      ContactsCleaner();
-      SetFirstLogin(false);
-    }
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   useEffect(() => {

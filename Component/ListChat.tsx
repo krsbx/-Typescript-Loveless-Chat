@@ -36,8 +36,10 @@ const ListChat = ({
         SetChat(snap.docs.map((doc) => doc.data() as MessageContext))
       );
 
-    return unsubscribe;
-  }, [id]);
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   const LastChat = () => {
     if (Chat[0]) {
