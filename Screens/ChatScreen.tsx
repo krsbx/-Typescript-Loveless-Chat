@@ -12,12 +12,13 @@ import {
   TextInputContentSizeChangeEventData,
   NativeSyntheticEvent,
 } from 'react-native';
-import { Avatar, Input } from 'react-native-elements';
+import { Avatar } from 'react-native-elements';
 import { auth, database, timestamp } from '../Component/FirebaseSDK';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import ChatElement from '../Component/ChatElement';
 import PopUpMenu from '../Component/PopupMenu';
 import ChatPopUp from '../Screens/Pop Up/ChatPopUp';
+import { sendPushNotification } from '../Component/NotificationsSDK';
 
 type MessageContent = {
   Nickname: string;
@@ -30,6 +31,31 @@ type MessageContent = {
 type ChatData = {
   id: string;
   data: MessageContent;
+};
+
+type UserData = {
+  FullName: string;
+  Nickname: string;
+  Profile: string;
+  UID: string;
+  Token: string;
+};
+
+type ChatMember = {
+  member: Array<string>;
+};
+
+type NotificationContent = {
+  to: string;
+  sound: string;
+  title: string;
+  body: string;
+  data: {
+    id: string;
+    chatName: string;
+    currentMode: string;
+  };
+  icon?: string;
 };
 
 const ChatScreen = ({ navigation, route }: any) => {
@@ -138,13 +164,50 @@ const ChatScreen = ({ navigation, route }: any) => {
       timestamp: timestamp,
     };
 
-    await database
+    const ChatRef = database
       .collection('Database')
       .doc('Chats')
       .collection(route.params.currentMode)
-      .doc(route.params.id)
-      .collection('message')
-      .add(NewMessage);
+      .doc(route.params.id);
+
+    await ChatRef.collection('message').add(NewMessage);
+
+    const Member: ChatMember = (await ChatRef.get()).data() as ChatMember;
+
+    Member['member'].forEach(async (UID) => {
+      if (UID !== auth.currentUser?.uid) {
+        const UserRef = database
+          .collection('Database')
+          .doc('Users')
+          .collection(UID)
+          .doc('Informations');
+
+        const UserInformations: UserData = (
+          await UserRef.get()
+        ).data() as UserData;
+
+        if (
+          UserInformations['Token'] !== undefined &&
+          UserInformations['Token'] !== ''
+        ) {
+          console.log(UserInformations['Token']);
+          const Notifications: NotificationContent = {
+            to: UserInformations['Token'],
+            sound: 'default',
+            title: route.params.chatName,
+            body: `${auth.currentUser?.displayName} : ${Chat}`,
+            data: {
+              id: route.params.id,
+              chatName: route.params.chatName,
+              currentMode: route.params.currentMode,
+            },
+            icon: auth.currentUser?.photoURL as string,
+          };
+
+          sendPushNotification(Notifications);
+        }
+      }
+    });
 
     SetChat('');
   };

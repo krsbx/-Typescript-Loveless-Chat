@@ -17,6 +17,14 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import ErrorElement from '../Component/ErrorElement';
 
+type UserData = {
+  FullName: string;
+  Nickname: string;
+  Profile: string;
+  UID: string;
+  Token: string;
+};
+
 const RegisterScreen = () => {
   const [Profile, setProfile] = useState<string>('');
   const [Request, setRequest] = useState(false);
@@ -87,18 +95,21 @@ const RegisterScreen = () => {
         ProfileUrl = PicturesUrl;
       }
 
+      const UserInformations: UserData = {
+        Nickname: Nickname,
+        UID: UID,
+        Profile: ProfileUrl,
+        FullName: '',
+        Token: '',
+      };
+
       //Add User Informations in Databases
       await database
         .collection('Database')
         .doc('Users')
         .collection(UID)
         .doc('Informations')
-        .set({
-          Nickname: Nickname,
-          UID: UID,
-          Profile: ProfileUrl,
-          FullName: '',
-        });
+        .set(UserInformations);
 
       await currentUser.user?.updateProfile({
         displayName: Nickname,

@@ -21,6 +21,7 @@ type UserData = {
   Nickname?: string;
   Profile?: string;
   UID?: string;
+  Token?: string;
 };
 
 type Member = {
