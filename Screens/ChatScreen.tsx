@@ -12,9 +12,9 @@ import {
   TextInputContentSizeChangeEventData,
   NativeSyntheticEvent,
 } from 'react-native';
-import { Avatar } from 'react-native-elements';
+import { Avatar, Image } from 'react-native-elements';
 import { auth, database, timestamp } from '../Component/FirebaseSDK';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons, Entypo } from '@expo/vector-icons';
 import ChatElement from '../Component/ChatElement';
 import PopUpMenu from '../Component/PopupMenu';
 import ChatPopUp from '../Screens/Pop Up/ChatPopUp';
@@ -26,12 +26,16 @@ import {
   MessageData,
   NotificationContent,
 } from '../Component/DataInterface';
+import MediaElement from '../Component/MediaElement';
 
 const ChatScreen = ({ navigation, route }: any) => {
   const [Chat, SetChat] = useState<string>('');
   const [Visible, SetVisible] = useState(false);
+  const [MediaPopUp, SetMediaPopUp] = useState(false);
   const [Message, SetMessage] = useState<MessageData[]>([]);
   const [Size, SetSize] = useState<number>(55);
+  const [Pictures, SetPictures] = useState<string>('');
+  const [MediaName, SetMediaName] = useState<string>('');
 
   const ScrollRef = useRef<FlatList>(null);
 
@@ -115,20 +119,23 @@ const ChatScreen = ({ navigation, route }: any) => {
         )
       );
 
-    return unsubscribe;
-  }, [route]);
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   const ScrollToEnd = () => {
     ScrollRef.current?.scrollToEnd({ animated: true });
   };
 
   const SendChat = async () => {
-    if (Chat === '') return;
+    if (Chat === '' && Pictures === '') return;
 
     const NewMessage: MessageContext = {
       Nickname: auth.currentUser?.displayName as string,
       email: auth.currentUser?.email as string,
       message: Chat,
+      picture: Pictures,
       profile: auth.currentUser?.photoURL as string,
       timestamp: timestamp,
     };
@@ -159,7 +166,6 @@ const ChatScreen = ({ navigation, route }: any) => {
           UserInformations['Token'] !== undefined &&
           UserInformations['Token'] !== ''
         ) {
-          console.log(UserInformations['Token']);
           const Notifications: NotificationContent = {
             to: UserInformations['Token'],
             sound: 'default',
@@ -178,6 +184,7 @@ const ChatScreen = ({ navigation, route }: any) => {
     });
 
     SetChat('');
+    SetPictures('');
   };
 
   const styles = StyleSheet.create({
@@ -216,22 +223,69 @@ const ChatScreen = ({ navigation, route }: any) => {
           }}
         >
           <View style={{ height: '100%' }}>
+            <MediaElement
+              Visible={MediaPopUp}
+              SetVisible={SetMediaPopUp}
+              SetPictures={SetPictures}
+            />
             <FlatList
               ref={ScrollRef}
               onContentSizeChange={ScrollToEnd}
               data={Message}
               keyExtractor={(item) => item['id']}
               style={styles.scrollAble}
-              renderItem={({ item }) => (
-                <ChatElement
-                  key={item['id']}
-                  sender={item['data']['email'] === auth.currentUser?.email}
-                  Nickname={item['data']['Nickname']}
-                  message={item['data']['message']}
-                  profile={item['data']['profile']}
-                />
-              )}
+              renderItem={({ item }) => {
+                const Message: MessageData = item;
+                return (
+                  <ChatElement
+                    key={Message['id']}
+                    sender={
+                      Message['data']['email'] === auth.currentUser?.email
+                    }
+                    Nickname={Message['data']['Nickname']}
+                    message={Message['data']['message']}
+                    profile={Message['data']['profile']}
+                    picture={Message['data']['picture']}
+                  />
+                );
+              }}
             />
+            {Pictures !== '' && (
+              <View
+                style={{
+                  height: 120,
+                  flex: 1,
+                  position: 'absolute',
+                  bottom: Size,
+                  width: '100%',
+                }}
+              >
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  style={{
+                    backgroundColor: '#ffffff77',
+                    padding: 5,
+                    position: 'absolute',
+                    right: 0,
+                    zIndex: 1,
+                    borderRadius: 30,
+                  }}
+                >
+                  <Entypo
+                    name="cross"
+                    size={24}
+                    color="black"
+                    onPress={() => SetPictures('')}
+                  />
+                </TouchableOpacity>
+                <Image
+                  source={{ uri: Pictures }}
+                  style={{
+                    height: 100,
+                  }}
+                />
+              </View>
+            )}
             <View style={styles.inputContainer}>
               <TextInput
                 value={Chat}
@@ -243,6 +297,19 @@ const ChatScreen = ({ navigation, route }: any) => {
                   e: NativeSyntheticEvent<TextInputContentSizeChangeEventData>
                 ) => SetSize(e.nativeEvent.contentSize.height)}
               />
+              <TouchableOpacity
+                onPress={() => SetMediaPopUp(true)}
+                activeOpacity={0.5}
+                style={{
+                  marginLeft: 10,
+                }}
+              >
+                <MaterialCommunityIcons
+                  name="paperclip"
+                  size={20}
+                  color="black"
+                />
+              </TouchableOpacity>
               <TouchableOpacity
                 onPress={SendChat}
                 activeOpacity={0.5}

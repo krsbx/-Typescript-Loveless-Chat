@@ -32,7 +32,9 @@ const LoginScreen = ({ navigation }: any) => {
       }
     });
 
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   const Login = async (Email: string, Password: string) => {

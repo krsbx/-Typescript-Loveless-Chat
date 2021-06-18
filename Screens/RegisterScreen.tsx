@@ -3,20 +3,19 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   View,
-  Platform,
   TouchableOpacity,
   Text,
   TextInput,
 } from 'react-native';
 import { Avatar, Input, Button } from 'react-native-elements';
 import { MaterialIcons } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
 import { auth, database, storage } from '../Component/FirebaseSDK';
 import { CreateBlob } from '../Utility/Utility';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import ErrorElement from '../Component/ErrorElement';
 import { UserInformations } from '../Component/DataInterface';
+import { SelectPicture, AskPermission } from '../Utility/ImagePicker';
 
 const RegisterScreen = () => {
   const [Profile, setProfile] = useState<string>('');
@@ -26,30 +25,6 @@ const RegisterScreen = () => {
 
   const emptyProfile =
     'https://www.pngfind.com/pngs/b/16-168360_user-icon-png.png';
-
-  const SelectPicture = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [3, 3],
-      quality: 0.5,
-      base64: true,
-    });
-
-    if (!result.cancelled) {
-      setProfile(result.uri);
-    }
-  };
-
-  const AskPermission = async () => {
-    if (Platform.OS === 'web') {
-      const { status } = await ImagePicker.getMediaLibraryPermissionsAsync();
-
-      if (status !== 'granted') {
-        alert('We need permission for your media library');
-      }
-    }
-  };
 
   const Register = async (
     Nickname: string,
@@ -77,7 +52,7 @@ const RegisterScreen = () => {
       await database.collection('Database').doc('Users').update(toUpdate);
 
       if (Profile) {
-        const extensions = Profile.split(',')[0].split(';')[0].split('/')[1];
+        const extensions = '.jpg';
 
         const PicturesRef = storage
           .ref(`Profile`)
@@ -157,7 +132,7 @@ const RegisterScreen = () => {
         {({ handleChange, handleBlur, handleSubmit, values, errors }: any) => (
           <View style={styles.viewContainer}>
             <TouchableOpacity
-              onPress={SelectPicture}
+              onPress={() => SelectPicture(setProfile, true)}
               activeOpacity={0.8}
               style={{
                 flex: 1,

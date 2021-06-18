@@ -1,15 +1,22 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Avatar } from 'react-native-elements';
+import { Image, Avatar } from 'react-native-elements';
 
 type ToPass = {
   sender: boolean;
   Nickname: string;
-  message: string;
+  message?: string;
   profile: string;
+  picture?: string;
 };
 
-const ChatElement = ({ sender, Nickname, message, profile }: ToPass) => {
+const ChatElement = ({
+  sender,
+  Nickname,
+  message,
+  profile,
+  picture,
+}: ToPass) => {
   const styler = sender === true ? styles.sender : styles.receiver;
 
   const toSend = (
@@ -25,14 +32,22 @@ const ChatElement = ({ sender, Nickname, message, profile }: ToPass) => {
       >
         {Nickname}
       </Text>
-      <Text style={{ alignSelf: 'flex-end', color: 'white', marginRight: 5 }}>
-        {message}
-      </Text>
+      {picture !== '' && (
+        <Image
+          source={{ uri: `data:image/jpeg;base64,${picture}` }}
+          style={{ width: 200, height: 200 }}
+        />
+      )}
+      {message !== '' && (
+        <Text style={{ alignSelf: 'flex-end', color: 'white', marginRight: 5 }}>
+          {message}
+        </Text>
+      )}
       <View
         style={{
           position: 'absolute',
-          bottom: '-30%',
-          right: '-5%',
+          bottom: -20,
+          right: -15,
           backgroundColor: 'white',
           borderRadius: 30,
           padding: 3,
@@ -56,16 +71,21 @@ const ChatElement = ({ sender, Nickname, message, profile }: ToPass) => {
       >
         {Nickname}
       </Text>
-      <Text
-        style={{ alignSelf: 'flex-start', color: '#464646', marginLeft: 5 }}
-      >
-        {message}
-      </Text>
+      {picture !== '' && (
+        <Image source={{ uri: `data:image/jpeg;base64,${picture}` }} />
+      )}
+      {message !== '' && (
+        <Text
+          style={{ alignSelf: 'flex-start', color: '#464646', marginLeft: 5 }}
+        >
+          {message}
+        </Text>
+      )}
       <View
         style={{
           position: 'absolute',
-          bottom: '-30%',
-          left: '-5%',
+          bottom: -20,
+          left: -15,
           backgroundColor: 'white',
           borderRadius: 30,
           padding: 3,
