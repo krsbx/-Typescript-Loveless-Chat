@@ -34,7 +34,7 @@ const ChatElement = ({
       </Text>
       {picture !== '' && (
         <Image
-          source={{ uri: picture as string }}
+          source={{ uri: `data:image/jpeg;base64,${picture}` }}
           style={{ width: 200, height: 200 }}
         />
       )}
@@ -46,8 +46,8 @@ const ChatElement = ({
       <View
         style={{
           position: 'absolute',
-          bottom: '-30%',
-          right: '-5%',
+          bottom: -20,
+          right: -15,
           backgroundColor: 'white',
           borderRadius: 30,
           padding: 3,
@@ -71,7 +71,9 @@ const ChatElement = ({
       >
         {Nickname}
       </Text>
-      {picture !== '' && <Image source={{ uri: picture as string }} />}
+      {picture !== '' && (
+        <Image source={{ uri: `data:image/jpeg;base64,${picture}` }} />
+      )}
       {message !== '' && (
         <Text
           style={{ alignSelf: 'flex-start', color: '#464646', marginLeft: 5 }}
@@ -82,8 +84,8 @@ const ChatElement = ({
       <View
         style={{
           position: 'absolute',
-          bottom: '-30%',
-          left: '-5%',
+          bottom: -20,
+          left: -15,
           backgroundColor: 'white',
           borderRadius: 30,
           padding: 3,

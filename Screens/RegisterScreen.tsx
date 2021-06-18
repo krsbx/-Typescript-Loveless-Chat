@@ -52,7 +52,7 @@ const RegisterScreen = () => {
       await database.collection('Database').doc('Users').update(toUpdate);
 
       if (Profile) {
-        const extensions = Profile.split(',')[0].split(';')[0].split('/')[1];
+        const extensions = '.jpg';
 
         const PicturesRef = storage
           .ref(`Profile`)
