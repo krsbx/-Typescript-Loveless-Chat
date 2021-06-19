@@ -38,10 +38,10 @@ export interface UserInformations {
 //  Chat Screen (For consistency data in User Messages)
 export interface MessageContext {
   Nickname: string;
-  email: string;
-  message?: string;
-  picture?: string;
-  profile: string;
+  Email: string;
+  Message?: string;
+  Media?: string;
+  Profile: string;
   timestamp: any;
 }
 

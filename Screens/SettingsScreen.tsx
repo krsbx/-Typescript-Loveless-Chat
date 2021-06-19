@@ -78,7 +78,7 @@ const SettingsScreen = ({ navigation }: any) => {
       const UID: string = auth.currentUser?.uid as string;
 
       let ProfileUrl = PhotoURL;
-      const extensions = '.jpg';
+      const extensions = NewPhoto.substr(NewPhoto.lastIndexOf('.' + 1));
 
       const PicturesRef = storage.ref(`Profile`).child(`${UID}.${extensions}`);
 
@@ -101,20 +101,22 @@ const SettingsScreen = ({ navigation }: any) => {
     }
   };
 
-  const UpdateProfile = () => {
+  const UpdateProfile = async () => {
     try {
       if (FullName !== NewFullName) {
-        UpdateFullName();
+        await UpdateFullName();
       }
 
       if (NewPhoto) {
-        UpdatePictures();
+        await UpdatePictures();
       }
+
+      SetRequest(true);
     } catch (error) {
       console.error(error);
     }
 
-    SetRequest(true);
+    SetRequest(false);
   };
 
   const DeleteData = async () => {

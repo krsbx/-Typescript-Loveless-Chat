@@ -137,7 +137,7 @@ const HomeScreen = ({ navigation }: any) => {
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [Mode]);
 
   useEffect(() => {
     if (IsFocus) {

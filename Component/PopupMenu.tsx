@@ -6,14 +6,9 @@ import {
   Modal,
   TouchableWithoutFeedback,
 } from 'react-native';
+import { PopUpData } from './ScreensInterface';
 
-type ToPass = {
-  children: any;
-  visible: boolean;
-  SetVisible: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
-const PopUpMenu = ({ children, visible, SetVisible }: ToPass) => {
+const PopUpMenu = ({ children, visible, SetVisible }: PopUpData) => {
   return (
     <Modal visible={visible} animationType="fade" transparent={true}>
       <SafeAreaView style={styles.container}>

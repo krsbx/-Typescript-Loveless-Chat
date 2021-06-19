@@ -1,25 +1,7 @@
 import React, { useRef } from 'react';
-import {
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  TextStyle,
-  ViewStyle,
-} from 'react-native';
+import { StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { Input } from 'react-native-elements';
-
-type ToPass = {
-  placeholder?: string;
-  SetValue?: React.Dispatch<React.SetStateAction<string>>;
-  value?: string;
-  leftIcon?: React.ReactElement;
-  rightIcon?: React.ReactElement;
-  leftIconContainerStyle?: ViewStyle;
-  rightIconContainerStyle?: ViewStyle;
-  style?: TextStyle;
-  inputStyle?: TextStyle;
-  containerStyle?: ViewStyle;
-};
+import { SearchBarParams } from './ScreensInterface';
 
 const SearchBar = ({
   placeholder,
@@ -32,7 +14,7 @@ const SearchBar = ({
   style,
   inputStyle,
   containerStyle,
-}: ToPass) => {
+}: SearchBarParams) => {
   const SearchBar = useRef<TextInput>(null);
 
   return (

@@ -14,14 +14,13 @@ import * as yup from 'yup';
 import ErrorElement from '../Component/ErrorElement';
 import firebase from 'firebase';
 import { UseMode } from '../Component/ModeContext';
+import { ReloginData } from './ScreensInterface';
 
-type ToPass = {
-  Visible: boolean;
-  SetVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  DeleteAccounts: CallableFunction;
-};
-
-const ReloginElement = ({ Visible, SetVisible, DeleteAccounts }: ToPass) => {
+const ReloginElement = ({
+  Visible,
+  SetVisible,
+  DeleteAccounts,
+}: ReloginData) => {
   const { SetVisibleTab } = UseMode();
 
   const LoginSchema = yup.object().shape({

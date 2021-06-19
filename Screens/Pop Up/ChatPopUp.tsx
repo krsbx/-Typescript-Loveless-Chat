@@ -1,22 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
-import { auth, database } from '../../Component/FirebaseSDK';
+import { auth, database, storage } from '../../Component/FirebaseSDK';
 import firebase from 'firebase';
+import { MoreChat } from '../../Component/ScreensInterface';
 
-type Params = {
-  id: string;
-  chatName: string;
-  currentMode: string;
-};
-
-type ToPass = {
-  SetVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  navigation: any;
-  params: Params;
-};
-
-const ChatPopUp = ({ SetVisible, navigation, params }: ToPass) => {
+const ChatPopUp = ({ SetVisible, navigation, params }: MoreChat) => {
   const DeleteChats = async () => {
     try {
       const ChatRef = database
@@ -38,6 +27,14 @@ const ChatPopUp = ({ SetVisible, navigation, params }: ToPass) => {
       await ChatRef.delete().then(() => {
         navigation.goBack();
       });
+
+      //Remove Chat Media
+      const MediaRef = storage
+        .ref(`Messages`)
+        .child(params['currentMode'])
+        .child(params['id']);
+
+      await MediaRef.delete();
     } catch (error) {
       console.error(error);
     }

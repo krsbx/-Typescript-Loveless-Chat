@@ -14,14 +14,9 @@ import {
   TakePictures,
   AskPermission,
 } from '../Utility/ImagePicker';
+import { MediaSets } from './ScreensInterface';
 
-type ToPass = {
-  Visible: boolean;
-  SetVisible: Dispatch<SetStateAction<boolean>>;
-  SetPictures: Dispatch<SetStateAction<string>>;
-};
-
-const MediaElement = ({ Visible, SetVisible, SetPictures }: ToPass) => {
+const MediaElement = ({ Visible, SetVisible, SetMedia }: MediaSets) => {
   useEffect(() => {
     AskPermission();
   }, []);
@@ -46,7 +41,7 @@ const MediaElement = ({ Visible, SetVisible, SetPictures }: ToPass) => {
               <TouchableOpacity
                 style={styles.MediaSelections}
                 onPress={() => {
-                  SelectPicture(SetPictures, false);
+                  SelectPicture(SetMedia, false);
                   SetVisible(false);
                 }}
               >
@@ -56,7 +51,7 @@ const MediaElement = ({ Visible, SetVisible, SetPictures }: ToPass) => {
               <TouchableOpacity
                 style={styles.MediaSelections}
                 onPress={() => {
-                  TakePictures(SetPictures);
+                  TakePictures(SetMedia);
                   SetVisible(false);
                 }}
               >

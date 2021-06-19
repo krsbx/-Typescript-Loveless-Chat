@@ -18,8 +18,9 @@ import {
   UserProfileURL,
   FriendInformations,
 } from '../Component/DataInterface';
+import { AddMember } from '../Component/ScreensInterface';
 
-const AddMemberScreen = ({ navigation, route }: any) => {
+const AddMemberScreen = ({ navigation, route }: AddMember) => {
   const [Friends, SetFriends] = useState<ContactInformations[]>([]);
   const [Member, SetMember] = useState<string[]>([]);
   const Invitations: string[] = [];
@@ -96,7 +97,7 @@ const AddMemberScreen = ({ navigation, route }: any) => {
       .collection('Database')
       .doc('Chats')
       .collection('Groups')
-      .doc(route.params.id);
+      .doc(route['params']['id']);
 
     const MemberRes = (await MemberRef.get()).data() as ChatMember;
 
@@ -145,7 +146,7 @@ const AddMemberScreen = ({ navigation, route }: any) => {
         .collection('Database')
         .doc('Chats')
         .collection('Groups')
-        .doc(route.params.id);
+        .doc(route['params']['id']);
 
       await Promise.all(
         Invitations.map(async (inv) => {
