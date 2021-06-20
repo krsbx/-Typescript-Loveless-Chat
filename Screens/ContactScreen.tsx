@@ -107,7 +107,8 @@ const ContactScreen = ({ navigation }: any) => {
 
       CheckChatExist.docs.map((doc) => {
         const data = doc.data()['member'];
-        Exists = data.includes(selected) ? doc.id : '';
+        Exists =
+          data.includes(selected) && data.includes(UserUID) ? doc.id : '';
       });
 
       if (!Exists) {

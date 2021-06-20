@@ -71,25 +71,23 @@ export interface SearchBarParams {
   containerStyle?: ViewStyle;
 }
 
+export interface ChatParams {
+  id: string;
+  chatName: string;
+  currentMode: string;
+}
+
 export interface ChatSections {
   navigation: any;
   route: {
-    params: {
-      chatName: string;
-      currentMode: string;
-      id: string;
-    };
+    params: ChatParams;
   };
 }
 
 export interface MoreChat {
   SetVisible: Dispatch<SetStateAction<boolean>>;
   navigation: any;
-  params: {
-    id: string;
-    chatName: string;
-    currentMode: string;
-  };
+  params: ChatParams;
 }
 
 export interface MoreHome {

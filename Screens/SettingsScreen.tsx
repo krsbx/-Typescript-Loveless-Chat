@@ -5,17 +5,15 @@ import {
   View,
   TouchableOpacity,
   SafeAreaView,
-  Platform,
 } from 'react-native';
 import { Input, Button, Avatar } from 'react-native-elements';
 import { Ionicons } from '@expo/vector-icons';
 import { auth, database, storage } from '../Component/FirebaseSDK';
 import { CreateBlob } from '../Utility/Utility';
 import ErrorElement from '../Component/ErrorElement';
-import firebase from 'firebase';
 import ReloginElement from '../Component/ReloginElement';
-import { ChatMember } from '../Component/DataInterface';
 import { SelectPicture, AskPermission } from '../Utility/ImagePicker';
+import { DeleteData } from '../Utility/SettingsUtility';
 
 type UserData = {
   FullName?: string;
@@ -119,92 +117,7 @@ const SettingsScreen = ({ navigation }: any) => {
     SetRequest(false);
   };
 
-  const DeleteData = async () => {
-    try {
-      const UID: string = auth.currentUser?.uid as string;
-
-      //Chat References
-      const ChatRef = database.collection('Database').doc('Chats');
-      const GroupsRef = ChatRef.collection('Groups');
-      const PrivateRef = ChatRef.collection('Private');
-
-      //Remove Member in Groups
-      const UnsubsGroup = GroupsRef.onSnapshot(async (snap) => {
-        snap.docs.forEach(async (doc) => {
-          const data: ChatMember = doc.data() as ChatMember;
-
-          if (data['member'] !== undefined) {
-            const IsMember = data['member'].includes(UID);
-            if (IsMember) {
-              await GroupsRef.doc(doc.id).update({
-                member: firebase.firestore.FieldValue.arrayRemove(UID),
-              });
-            }
-          }
-        });
-      });
-
-      //Remove Member in Private
-      const UnsubsPrivate = PrivateRef.onSnapshot(async (snap) => {
-        snap.docs.forEach(async (doc) => {
-          const data: ChatMember = doc.data() as ChatMember;
-
-          if (data['member'] !== undefined) {
-            const IsMember = data['member'].includes(UID);
-            if (IsMember) {
-              await PrivateRef.doc(doc.id).update({
-                member: firebase.firestore.FieldValue.arrayRemove(UID),
-              });
-            }
-          }
-        });
-      });
-
-      //Profile References
-      const ProfileRef = database
-        .collection('Database')
-        .doc('Users')
-        .collection(UID);
-
-      //Remove Friends
-      const UnsubsFriends = ProfileRef.doc('Contacts')
-        .collection('Friends')
-        .onSnapshot(async (snap) => {
-          snap.docs.forEach(async (doc) => {
-            await ProfileRef.doc('Contacts')
-              .collection('Friends')
-              .doc(doc.id)
-              .delete();
-          });
-        });
-
-      await ProfileRef.doc('Contacts').delete();
-
-      //Remove Informations
-      await ProfileRef.doc('Informations').delete();
-
-      // Remove User Entry
-      const UserRef = database.collection('Database').doc('Users');
-      const Key = `UID.${Nickname}`;
-
-      let toUpdate: any = {};
-      toUpdate[Key] = firebase.firestore.FieldValue.delete();
-
-      await UserRef.update(toUpdate);
-
-      await auth.currentUser?.delete().then(() => {
-        UnsubsGroup();
-        UnsubsPrivate();
-        UnsubsFriends();
-
-        navigation.replace('Login');
-      });
-    } catch (error) {
-      console.error(error['code']);
-    }
-  };
-
-  const DeleteAccounts = () => {
+  const DeleteAccounts = async () => {
     //Get Last Time User Sign In
     const metadata = new Date(
       auth.currentUser?.metadata['lastSignInTime'] as string
@@ -219,7 +132,7 @@ const SettingsScreen = ({ navigation }: any) => {
       return;
     }
 
-    DeleteData();
+    await DeleteData(navigation);
   };
 
   useEffect(() => {
@@ -271,7 +184,7 @@ const SettingsScreen = ({ navigation }: any) => {
         <ReloginElement
           Visible={ShowAuth}
           SetVisible={SetShowAuth}
-          DeleteAccounts={DeleteData}
+          DeleteAccounts={DeleteData.bind(navigation)}
         />
         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
           <View

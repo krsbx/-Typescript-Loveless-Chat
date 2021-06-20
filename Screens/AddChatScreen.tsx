@@ -7,10 +7,9 @@ import {
   TextInput,
 } from 'react-native';
 import { Input, Button } from 'react-native-elements';
-import { auth, database } from '../Component/FirebaseSDK';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
-import { ChatInformations } from '../Component/DataInterface';
+import { CreateChat } from '../Utility/CreateGroupsUtility';
 
 const AddChatScreen = ({ navigation }: any) => {
   const [ChatName, setChatName] = useState('');
@@ -44,25 +43,8 @@ const AddChatScreen = ({ navigation }: any) => {
     ChatNameRef.current?.focus();
   }, []);
 
-  //Create New Chat Entry in Group Sections
-  //  Each creations => 1 Member (Users who created the groups)
-  const CreateChat = async () => {
-    const NewChat: ChatInformations = {
-      chatName: ChatName,
-      member: [auth.currentUser?.uid as string],
-    };
-
-    try {
-      const CreatedChat = await database
-        .collection('Database')
-        .doc('Chats')
-        .collection('Groups')
-        .add(NewChat);
-
-      if (CreatedChat) navigation.goBack();
-    } catch (error) {
-      console.error(error);
-    }
+  const CreateGroups = async () => {
+    await CreateChat(ChatName, navigation);
   };
 
   return (
@@ -72,7 +54,7 @@ const AddChatScreen = ({ navigation }: any) => {
           ref={ChatNameRef}
           value={ChatName}
           onChangeText={(e) => setChatName(e)}
-          onSubmitEditing={CreateChat}
+          onSubmitEditing={CreateGroups}
           placeholder="Group Chat Name"
           leftIcon={
             <MaterialIcons size={24} name="chat-bubble" color="black" />
@@ -83,7 +65,7 @@ const AddChatScreen = ({ navigation }: any) => {
         <Button
           title="Create Groups"
           type="solid"
-          onPress={CreateChat}
+          onPress={CreateGroups}
           containerStyle={styles.button}
         />
       </View>

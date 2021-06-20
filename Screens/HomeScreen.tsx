@@ -17,6 +17,7 @@ import { ContactsCleaner } from '../Utility/ContactsCleaner';
 import { useIsFocused } from '@react-navigation/native';
 import SearchBar from '../Component/SearchBar';
 import { ChatCollections, ChatInformations } from '../Component/DataInterface';
+import { ChatParams } from '../Component/ScreensInterface';
 
 const HomeScreen = ({ navigation }: any) => {
   const [Chat, SetChat] = useState<ChatCollections[]>([]);
@@ -34,11 +35,13 @@ const HomeScreen = ({ navigation }: any) => {
   };
 
   const EnterChat = (id: string, chatName: string, chatMode: string) => {
-    navigation.navigate('Chat', {
+    const Actions: ChatParams = {
       id: id,
       chatName: chatName,
       currentMode: chatMode,
-    });
+    };
+
+    navigation.navigate('Chat', Actions);
   };
 
   const Search = () => {
