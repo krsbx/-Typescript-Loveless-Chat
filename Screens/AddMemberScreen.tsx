@@ -23,13 +23,23 @@ import { AddMember } from '../Component/ScreensInterface';
 const AddMemberScreen = ({ navigation, route }: AddMember) => {
   const [Friends, SetFriends] = useState<ContactInformations[]>([]);
   const [Member, SetMember] = useState<string[]>([]);
-  const Invitations: string[] = [];
+  const [Invitations, SetInvitations] = useState<string[]>([]);
   const [SearchParams, SetSearchParams] = useState('');
 
   //Get current user list of friends
   //...Get current groups list of members
   const GetFriendsMember = async () => {
     const UID = auth.currentUser?.uid as string;
+
+    const MemberRef = database
+      .collection('Database')
+      .doc('Chats')
+      .collection('Groups')
+      .doc(route['params']['id']);
+
+    const MemberRes = (await MemberRef.get()).data() as ChatMember;
+
+    SetMember(MemberRes['member']);
 
     const ContactRef = database
       .collection('Database')
@@ -44,7 +54,7 @@ const AddMemberScreen = ({ navigation, route }: AddMember) => {
       .map((doc) => {
         const data: FriendInformations = doc.data() as FriendInformations;
 
-        if (data['UID'] != undefined) {
+        if (data['UID'] && !MemberRes['member'].includes(data['UID'])) {
           return {
             UID: data['UID'],
             Nickname: data['Nickname'],
@@ -92,25 +102,13 @@ const AddMemberScreen = ({ navigation, route }: AddMember) => {
         Profile: ProfileURL[id]['Profile'],
       }))
     );
-
-    const MemberRef = database
-      .collection('Database')
-      .doc('Chats')
-      .collection('Groups')
-      .doc(route['params']['id']);
-
-    const MemberRes = (await MemberRef.get()).data() as ChatMember;
-
-    SetMember(MemberRes['member']);
   };
 
   const Search = () => {
     //Filter if friends in the groups or not
     //  Filter to remove undefined data
     return Friends.filter((contacts: ContactInformations) => {
-      if (Member.includes(contacts['UID'])) {
-        return null;
-      } else if (SearchParams == '') {
+      if (SearchParams == '') {
         return contacts;
       } else if (
         SearchParams !== undefined &&
@@ -148,13 +146,13 @@ const AddMemberScreen = ({ navigation, route }: AddMember) => {
         .collection('Groups')
         .doc(route['params']['id']);
 
-      await Promise.all(
-        Invitations.map(async (inv) => {
-          await MemberRef.update({
-            member: firebase.firestore.FieldValue.arrayUnion(inv),
-          });
-        })
-      ).then(() => {
+      const InviteMember = Invitations.map(async (inv) => {
+        await MemberRef.update({
+          member: firebase.firestore.FieldValue.arrayUnion(inv),
+        });
+      });
+
+      await Promise.all(InviteMember).then(() => {
         navigation.goBack();
       });
     } catch (error) {

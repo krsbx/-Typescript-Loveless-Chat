@@ -36,6 +36,7 @@ export const AddContact = async (
       //  If exists dont proceed
       if (Friends['UID'] && Friends['Nickname'] === Name) {
         Exist = true;
+
         return;
       }
     });

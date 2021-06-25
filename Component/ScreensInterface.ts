@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction, ReactElement } from 'react';
 import { TextStyle, ViewStyle } from 'react-native';
+import { DocsInfo, DocsObjects } from './DataInterface';
 
 export interface ChatBubbles {
   sender: boolean;
@@ -7,6 +8,7 @@ export interface ChatBubbles {
   Message?: string;
   Profile: string;
   Media?: string;
+  Docs?: DocsInfo;
 }
 
 export interface ContactsEntry {
@@ -28,6 +30,7 @@ export interface MediaSets {
   Visible: boolean;
   SetVisible: Dispatch<SetStateAction<boolean>>;
   SetMedia: Dispatch<SetStateAction<string>>;
+  SetDocs: Dispatch<SetStateAction<DocsObjects>>;
 }
 
 export interface InvitationsData {

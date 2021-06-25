@@ -76,7 +76,7 @@ const SettingsScreen = ({ navigation }: any) => {
       const UID: string = auth.currentUser?.uid as string;
 
       let ProfileUrl = PhotoURL;
-      const extensions = NewPhoto.substr(NewPhoto.lastIndexOf('.' + 1));
+      const extensions = NewPhoto.split('.').pop();
 
       const PicturesRef = storage.ref(`Profile`).child(`${UID}.${extensions}`);
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Linking } from 'react-native';
 import { Image, Avatar } from 'react-native-elements';
 import { ChatBubbles } from './ScreensInterface';
 
@@ -9,6 +9,7 @@ const ChatElement = ({
   Message,
   Profile,
   Media,
+  Docs,
 }: ChatBubbles) => {
   const styler = sender === true ? styles.sender : styles.receiver;
 
@@ -25,6 +26,11 @@ const ChatElement = ({
       >
         {Nickname}
       </Text>
+      {Docs?.URI !== undefined && (
+        <View>
+          <Text onPress={() => Linking.openURL(Docs?.URI)}>{Docs?.Name}</Text>
+        </View>
+      )}
       {Media !== '' && (
         <Image source={{ uri: Media }} style={{ width: 200, height: 200 }} />
       )}

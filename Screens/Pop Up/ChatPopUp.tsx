@@ -15,18 +15,13 @@ const ChatPopUp = ({ SetVisible, navigation, params }: MoreChat) => {
         .doc(params['id']);
 
       //Remove Chat Entrys
-      const listDocs = (await ChatRef.collection('message').get()).docs.map(
-        (doc) => doc.id
+      (
+        await ChatRef.collection('message').get({
+          source: 'server',
+        })
+      ).docs.forEach(
+        async (doc) => await ChatRef.collection('message').doc(doc.id).delete()
       );
-
-      listDocs.map(async (id) => {
-        await ChatRef.collection('message').doc(id).delete();
-      });
-
-      //Remove Chat Data
-      await ChatRef.delete().then(() => {
-        navigation.goBack();
-      });
 
       //Remove Chat Media
       const MediaRef = storage
@@ -35,6 +30,11 @@ const ChatPopUp = ({ SetVisible, navigation, params }: MoreChat) => {
         .child(params['id']);
 
       await MediaRef.delete();
+
+      //Remove Chat Data
+      await ChatRef.delete();
+
+      navigation.goBack();
     } catch (error) {
       console.error(error);
     }
@@ -52,9 +52,9 @@ const ChatPopUp = ({ SetVisible, navigation, params }: MoreChat) => {
         member: firebase.firestore.FieldValue.arrayRemove(
           auth.currentUser?.uid as string
         ),
-      }).then(() => {
-        navigation.goBack();
       });
+
+      navigation.goBack();
     } catch (error) {
       console.error(error);
     }

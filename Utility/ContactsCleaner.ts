@@ -8,7 +8,7 @@ export const ContactsCleaner = async () => {
   const UserData: ListUser = (await UserRef.get()).data() as ListUser;
 
   if (UserData['UID'] !== undefined) {
-    const UID: any = auth.currentUser?.uid;
+    const UID: string = auth.currentUser?.uid as string;
 
     //User Contacts Ref
     const ContactsRef = database
@@ -18,25 +18,20 @@ export const ContactsCleaner = async () => {
       .doc('Contacts')
       .collection('Friends');
 
-    //Clean unnecessary contacts
-    const unsubscribe = ContactsRef.onSnapshot(async (snap) => {
-      snap.docs.forEach(async (doc) => {
-        const Data: FriendInformations = (
-          await ContactsRef.doc(doc.id).get()
-        ).data() as FriendInformations;
-
-        if (Data['UID'] !== undefined) {
-          const UserID: string = Data['UID'];
-
-          if (Object.values(UserData['UID']).indexOf(UserID) == -1) {
-            await ContactsRef.doc(doc.id).delete();
-          }
-        }
-      });
+    const ContactsData = await ContactsRef.get({
+      source: 'server',
     });
 
-    return () => {
-      unsubscribe();
-    };
+    ContactsData.docs.map(async (doc) => {
+      const Data: FriendInformations = doc.data() as FriendInformations;
+
+      if (Data['UID']) {
+        const UserID: string = Data['UID'];
+
+        if (Object.values(UserData['UID']).indexOf(UserID) == -1) {
+          await ContactsRef.doc(doc.id).delete();
+        }
+      }
+    });
   }
 };

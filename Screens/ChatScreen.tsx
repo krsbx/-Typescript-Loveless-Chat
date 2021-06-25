@@ -5,6 +5,7 @@ import {
   SafeAreaView,
   KeyboardAvoidingView,
   View,
+  Text,
   TextInput,
   TouchableOpacity,
   Keyboard,
@@ -18,7 +19,11 @@ import { Ionicons, MaterialCommunityIcons, Entypo } from '@expo/vector-icons';
 import ChatElement from '../Component/ChatElement';
 import PopUpMenu from '../Component/PopupMenu';
 import ChatPopUp from '../Screens/Pop Up/ChatPopUp';
-import { MessageContext, MessageData } from '../Component/DataInterface';
+import {
+  MessageContext,
+  MessageData,
+  DocsObjects,
+} from '../Component/DataInterface';
 import MediaElement from '../Component/MediaElement';
 import { SendChat } from '../Utility/ChatUtility';
 import { ChatSections } from '../Component/ScreensInterface';
@@ -30,6 +35,7 @@ const ChatScreen = ({ navigation, route }: ChatSections) => {
   const [Message, SetMessage] = useState<MessageData[]>([]);
   const [Size, SetSize] = useState<number>(55);
   const [Media, SetMedia] = useState<string>('');
+  const [Docs, SetDocs] = useState<DocsObjects>({});
 
   const ScrollRef = useRef<FlatList>(null);
 
@@ -127,10 +133,12 @@ const ChatScreen = ({ navigation, route }: ChatSections) => {
       route['params']['chatName'],
       Chat,
       Media,
+      Docs,
       route['params']['currentMode'],
       route['params']['id'],
       SetChat,
-      SetMedia
+      SetMedia,
+      SetDocs
     );
   };
 
@@ -174,6 +182,7 @@ const ChatScreen = ({ navigation, route }: ChatSections) => {
               Visible={MediaPopUp}
               SetVisible={SetMediaPopUp}
               SetMedia={SetMedia}
+              SetDocs={SetDocs}
             />
             <FlatList
               ref={ScrollRef}
@@ -193,10 +202,42 @@ const ChatScreen = ({ navigation, route }: ChatSections) => {
                     Message={Message['data']['Message']}
                     Profile={Message['data']['Profile']}
                     Media={Message['data']['Media']}
+                    Docs={Message['data']['Docs']}
                   />
                 );
               }}
             />
+            {Docs.uri !== undefined && (
+              <View
+                style={{
+                  height: 120,
+                  flex: 1,
+                  position: 'absolute',
+                  bottom: Size,
+                  width: '100%',
+                }}
+              >
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  style={{
+                    backgroundColor: '#ffffff77',
+                    padding: 5,
+                    position: 'absolute',
+                    right: 0,
+                    zIndex: 1,
+                    borderRadius: 30,
+                  }}
+                >
+                  <Entypo
+                    name="cross"
+                    size={24}
+                    color="black"
+                    onPress={() => SetDocs({})}
+                  />
+                </TouchableOpacity>
+                <Text>{Docs.name as string}</Text>
+              </View>
+            )}
             {Media !== '' && (
               <View
                 style={{

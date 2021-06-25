@@ -12,36 +12,32 @@ export const DeleteData = async (navigation: any) => {
     const PrivateRef = ChatRef.collection('Private');
 
     //Remove Member in Groups
-    const UnsubsGroup = GroupsRef.onSnapshot(async (snap) => {
-      snap.docs.forEach(async (doc) => {
-        const data: ChatMember = doc.data() as ChatMember;
+    const UnsubsGroup = await GroupsRef.where(
+      'member',
+      'array-contains',
+      auth.currentUser?.uid
+    ).get();
 
-        if (data['member'] !== undefined) {
-          const IsMember = data['member'].includes(UID);
-          if (IsMember) {
-            await GroupsRef.doc(doc.id).update({
-              member: firebase.firestore.FieldValue.arrayRemove(UID),
-            });
-          }
-        }
-      });
-    });
+    UnsubsGroup.docs.forEach(
+      async (doc) =>
+        await GroupsRef.doc(doc.id).update({
+          member: firebase.firestore.FieldValue.arrayRemove(UID),
+        })
+    );
 
     //Remove Member in Private
-    const UnsubsPrivate = PrivateRef.onSnapshot(async (snap) => {
-      snap.docs.forEach(async (doc) => {
-        const data: ChatMember = doc.data() as ChatMember;
+    const UnsubsPrivate = await PrivateRef.where(
+      'member',
+      'array-contains',
+      auth.currentUser?.uid
+    ).get();
 
-        if (data['member'] !== undefined) {
-          const IsMember = data['member'].includes(UID);
-          if (IsMember) {
-            await PrivateRef.doc(doc.id).update({
-              member: firebase.firestore.FieldValue.arrayRemove(UID),
-            });
-          }
-        }
-      });
-    });
+    UnsubsPrivate.docs.forEach(
+      async (doc) =>
+        await PrivateRef.doc(doc.id).update({
+          member: firebase.firestore.FieldValue.arrayRemove(UID),
+        })
+    );
 
     //Profile References
     const ProfileRef = database
@@ -50,16 +46,17 @@ export const DeleteData = async (navigation: any) => {
       .collection(UID);
 
     //Remove Friends
-    const UnsubsFriends = ProfileRef.doc('Contacts')
+    const UnsubsFriends = await ProfileRef.doc('Contacts')
       .collection('Friends')
-      .onSnapshot(async (snap) => {
-        snap.docs.forEach(async (doc) => {
-          await ProfileRef.doc('Contacts')
-            .collection('Friends')
-            .doc(doc.id)
-            .delete();
-        });
-      });
+      .get();
+
+    UnsubsFriends.docs.forEach(
+      async (doc) =>
+        await ProfileRef.doc('Contacts')
+          .collection('Friends')
+          .doc(doc.id)
+          .delete()
+    );
 
     await ProfileRef.doc('Contacts').delete();
 
@@ -78,10 +75,6 @@ export const DeleteData = async (navigation: any) => {
     await UserRef.update(toUpdate);
 
     await auth.currentUser?.delete().then(() => {
-      UnsubsGroup();
-      UnsubsPrivate();
-      UnsubsFriends();
-
       navigation.replace('Login');
     });
   } catch (error) {

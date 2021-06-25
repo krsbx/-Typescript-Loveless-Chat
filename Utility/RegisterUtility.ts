@@ -28,7 +28,7 @@ export const RegisterUser = async (
     await database.collection('Database').doc('Users').update(toUpdate);
 
     if (Profile) {
-      const extensions = Profile.substr(Profile.lastIndexOf('.' + 1));
+      const extensions = Profile.split('.').pop();
 
       const PicturesRef = storage.ref(`Profile`).child(`${UID}.${extensions}`);
 

@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
   SafeAreaView,
   View,
@@ -15,8 +15,14 @@ import {
   AskPermission,
 } from '../Utility/ImagePicker';
 import { MediaSets } from './ScreensInterface';
+import { TakeDocuments } from '../Utility/DocsPicker';
 
-const MediaElement = ({ Visible, SetVisible, SetMedia }: MediaSets) => {
+const MediaElement = ({
+  Visible,
+  SetVisible,
+  SetMedia,
+  SetDocs,
+}: MediaSets) => {
   useEffect(() => {
     AskPermission();
   }, []);
@@ -41,12 +47,14 @@ const MediaElement = ({ Visible, SetVisible, SetMedia }: MediaSets) => {
               <TouchableOpacity
                 style={styles.MediaSelections}
                 onPress={() => {
-                  SelectPicture(SetMedia, false);
+                  TakeDocuments(SetDocs);
                   SetVisible(false);
                 }}
               >
-                <Fontisto name="photograph" size={40} color="black" />
-                <Text style={{ fontWeight: '800', marginTop: 10 }}>Galery</Text>
+                <Fontisto name="file-1" size={40} color="black" />
+                <Text style={{ fontWeight: '800', marginTop: 10 }}>
+                  Document
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.MediaSelections}
@@ -57,6 +65,16 @@ const MediaElement = ({ Visible, SetVisible, SetMedia }: MediaSets) => {
               >
                 <Fontisto name="camera" size={40} color="black" />
                 <Text style={{ fontWeight: '800', marginTop: 10 }}>Camera</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.MediaSelections}
+                onPress={() => {
+                  SelectPicture(SetMedia, false);
+                  SetVisible(false);
+                }}
+              >
+                <Fontisto name="photograph" size={40} color="black" />
+                <Text style={{ fontWeight: '800', marginTop: 10 }}>Galery</Text>
               </TouchableOpacity>
             </View>
           </View>

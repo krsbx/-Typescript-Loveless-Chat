@@ -97,6 +97,28 @@ const HomeScreen = ({ navigation }: any) => {
       title: auth.currentUser?.displayName,
       headerTitleStyle: { fontWeight: '800' },
     });
+
+    const unsubscribe = database
+      .collection('Database')
+      .doc('Chats')
+      .collection(CurrentMode())
+      .where('member', 'array-contains', auth.currentUser?.uid)
+      .onSnapshot((snap) => {
+        SetChat(
+          snap.docs.map((doc) => {
+            const data: ChatInformations = doc.data() as ChatInformations;
+
+            return {
+              id: doc.id,
+              data: data,
+            };
+          })
+        );
+      });
+
+    return () => {
+      unsubscribe();
+    };
   }, [Visible, Mode]);
 
   useEffect(() => {
@@ -104,43 +126,7 @@ const HomeScreen = ({ navigation }: any) => {
       ContactsCleaner();
       SetFirstLogin(false);
     }
-
-    const UID: string = auth.currentUser?.uid as string;
-
-    const unsubscribe = database
-      .collection('Database')
-      .doc('Chats')
-      .collection(CurrentMode())
-      .onSnapshot((snap) => {
-        SetChat(
-          snap.docs
-            .map((doc) => {
-              const data: ChatInformations = doc.data() as ChatInformations;
-
-              if (data['member'] !== undefined) {
-                const IsMember = data['member'].includes(UID);
-                if (IsMember) {
-                  return {
-                    id: doc.id,
-                    data: data,
-                  };
-                }
-              }
-            })
-            .filter(
-              (
-                chats: ChatCollections | undefined
-              ): chats is ChatCollections => {
-                return chats != undefined;
-              }
-            )
-        );
-      });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [Mode]);
+  }, []);
 
   useEffect(() => {
     if (IsFocus) {

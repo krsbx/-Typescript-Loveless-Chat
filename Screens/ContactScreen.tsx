@@ -30,7 +30,9 @@ const ContactScreen = ({ navigation }: any) => {
       .doc('Contacts')
       .collection('Friends');
 
-    const ContactRes = await ContactRef.get();
+    const ContactRes = await ContactRef.get({
+      source: 'server',
+    });
 
     const ConResult = ContactRes.docs.map((doc) => {
       const data = doc.data();

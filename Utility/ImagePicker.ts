@@ -7,7 +7,10 @@ export const SelectPicture = async (
   profiles: boolean
 ) => {
   const result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    mediaTypes:
+      profiles === true
+        ? ImagePicker.MediaTypeOptions.Images
+        : ImagePicker.MediaTypeOptions.All,
     allowsEditing: true,
     quality: 0.65,
     base64: true,
@@ -23,7 +26,7 @@ export const TakePictures = async (
   SetPictures: Dispatch<SetStateAction<string>>
 ) => {
   const result = await ImagePicker.launchCameraAsync({
-    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    mediaTypes: ImagePicker.MediaTypeOptions.All,
     allowsEditing: true,
     quality: 0.65,
     base64: true,
