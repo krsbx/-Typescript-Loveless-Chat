@@ -38,11 +38,17 @@ export interface UserInformations {
 //  Chat Screen (For consistency data in User Messages)
 export interface MessageContext {
   Nickname: string;
-  email: string;
-  message?: string;
-  picture?: string;
-  profile: string;
+  Email: string;
+  Message?: string;
+  Media?: string;
+  Docs?: DocsInfo;
+  Profile: string;
   timestamp: any;
+}
+
+export interface DocsInfo {
+  Name: string;
+  URI: string;
 }
 
 //Interface for Whole Message in a Chat Rooms
@@ -146,4 +152,14 @@ export interface NotificationContent {
     chatName: string;
     currentMode: string;
   };
+}
+
+//Interface for Documents
+//  Usage:
+//   Docs Pickers
+export interface DocsObjects {
+  name?: string;
+  size?: number;
+  type?: 'success' | 'cancel' | undefined;
+  uri?: string;
 }

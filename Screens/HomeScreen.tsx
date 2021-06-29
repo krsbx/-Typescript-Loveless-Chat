@@ -17,6 +17,7 @@ import { ContactsCleaner } from '../Utility/ContactsCleaner';
 import { useIsFocused } from '@react-navigation/native';
 import SearchBar from '../Component/SearchBar';
 import { ChatCollections, ChatInformations } from '../Component/DataInterface';
+import { ChatParams } from '../Component/ScreensInterface';
 
 const HomeScreen = ({ navigation }: any) => {
   const [Chat, SetChat] = useState<ChatCollections[]>([]);
@@ -34,11 +35,13 @@ const HomeScreen = ({ navigation }: any) => {
   };
 
   const EnterChat = (id: string, chatName: string, chatMode: string) => {
-    navigation.navigate('Chat', {
+    const Actions: ChatParams = {
       id: id,
       chatName: chatName,
       currentMode: chatMode,
-    });
+    };
+
+    navigation.navigate('Chat', Actions);
   };
 
   const Search = () => {
@@ -94,6 +97,28 @@ const HomeScreen = ({ navigation }: any) => {
       title: auth.currentUser?.displayName,
       headerTitleStyle: { fontWeight: '800' },
     });
+
+    const unsubscribe = database
+      .collection('Database')
+      .doc('Chats')
+      .collection(CurrentMode())
+      .where('member', 'array-contains', auth.currentUser?.uid)
+      .onSnapshot((snap) => {
+        SetChat(
+          snap.docs.map((doc) => {
+            const data: ChatInformations = doc.data() as ChatInformations;
+
+            return {
+              id: doc.id,
+              data: data,
+            };
+          })
+        );
+      });
+
+    return () => {
+      unsubscribe();
+    };
   }, [Visible, Mode]);
 
   useEffect(() => {
@@ -101,42 +126,6 @@ const HomeScreen = ({ navigation }: any) => {
       ContactsCleaner();
       SetFirstLogin(false);
     }
-
-    const UID: string = auth.currentUser?.uid as string;
-
-    const unsubscribe = database
-      .collection('Database')
-      .doc('Chats')
-      .collection(CurrentMode())
-      .onSnapshot((snap) => {
-        SetChat(
-          snap.docs
-            .map((doc) => {
-              const data: ChatInformations = doc.data() as ChatInformations;
-
-              if (data['member'] !== undefined) {
-                const IsMember = data['member'].includes(UID);
-                if (IsMember) {
-                  return {
-                    id: doc.id,
-                    data: data,
-                  };
-                }
-              }
-            })
-            .filter(
-              (
-                chats: ChatCollections | undefined
-              ): chats is ChatCollections => {
-                return chats != undefined;
-              }
-            )
-        );
-      });
-
-    return () => {
-      unsubscribe();
-    };
   }, []);
 
   useEffect(() => {

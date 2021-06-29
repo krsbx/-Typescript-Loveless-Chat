@@ -10,12 +10,11 @@ import {
 import { Avatar, Input, Button } from 'react-native-elements';
 import { MaterialIcons } from '@expo/vector-icons';
 import { auth, database, storage } from '../Component/FirebaseSDK';
-import { CreateBlob } from '../Utility/Utility';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import ErrorElement from '../Component/ErrorElement';
-import { UserInformations } from '../Component/DataInterface';
 import { SelectPicture, AskPermission } from '../Utility/ImagePicker';
+import { RegisterUser } from '../Utility/RegisterUtility';
 
 const RegisterScreen = () => {
   const [Profile, setProfile] = useState<string>('');
@@ -33,61 +32,9 @@ const RegisterScreen = () => {
   ) => {
     setRequest(true);
 
-    try {
-      let ProfileUrl: string = emptyProfile;
+    await RegisterUser(Nickname, Email, Password, emptyProfile, Profile);
 
-      const currentUser = await auth.createUserWithEmailAndPassword(
-        Email,
-        Password
-      );
-
-      const Key = `UID.${Nickname}`;
-
-      const UID: string = currentUser.user?.uid as string;
-
-      let toUpdate: any = {};
-      toUpdate[Key] = UID;
-
-      //Add User To Database Entry
-      await database.collection('Database').doc('Users').update(toUpdate);
-
-      if (Profile) {
-        const extensions = '.jpg';
-
-        const PicturesRef = storage
-          .ref(`Profile`)
-          .child(`${UID}.${extensions}`);
-
-        await PicturesRef.put(await CreateBlob(Profile));
-        const PicturesUrl = await PicturesRef.getDownloadURL();
-        ProfileUrl = PicturesUrl;
-      }
-
-      const UserInformations: UserInformations = {
-        Nickname: Nickname,
-        UID: UID,
-        Profile: ProfileUrl,
-        FullName: '',
-        Token: '',
-      };
-
-      //Add User Informations in Databases
-      await database
-        .collection('Database')
-        .doc('Users')
-        .collection(UID)
-        .doc('Informations')
-        .set(UserInformations);
-
-      await currentUser.user?.updateProfile({
-        displayName: Nickname,
-        photoURL: ProfileUrl,
-      });
-    } catch (error) {
-      console.error(error);
-
-      setRequest(false);
-    }
+    setRequest(false);
   };
 
   const RegisterSchema = yup.object().shape({

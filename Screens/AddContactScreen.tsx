@@ -7,10 +7,9 @@ import {
   TextInput,
 } from 'react-native';
 import { Input, Button } from 'react-native-elements';
-import { auth, database } from '../Component/FirebaseSDK';
 import { Entypo } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
-import { ListUser, FriendInformations } from '../Component/DataInterface';
+import { AddContact } from '../Utility/AddContactUtility';
 
 const AddContactScreen = ({ navigation }: any) => {
   const [Name, setName] = useState<string>('');
@@ -45,76 +44,8 @@ const AddContactScreen = ({ navigation }: any) => {
     NameRef.current?.focus();
   }, []);
 
-  //Add other users informations to Contacts/Friends Sections
-  //  If no name/current user name => Dont proceed
-  const AddContact = async () => {
-    if (Name === undefined) return;
-
-    if (Name === auth.currentUser?.displayName) return;
-
-    SetRequest(true);
-
-    try {
-      const UID: string = auth.currentUser?.uid as string;
-
-      const userRef = database.collection('Database').doc('Users');
-
-      const FriendsRef = userRef
-        .collection(UID)
-        .doc('Contacts')
-        .collection('Friends');
-
-      let Exist = false;
-
-      const AllFriends = await FriendsRef.get();
-
-      AllFriends.docs.forEach((doc) => {
-        const Friends: FriendInformations = doc.data() as FriendInformations;
-
-        //Check if the current input already exist
-        //  If exists dont proceed
-        if (Friends['UID'] && Friends['Nickname'] === Name) {
-          Exist = true;
-          return;
-        }
-      });
-
-      if (Exist) {
-        SetRequest(false);
-
-        return;
-      }
-
-      //Get All user UID
-      const userSnap: ListUser = (await userRef.get()).data() as ListUser;
-
-      const data = userSnap['UID'];
-
-      //If the users exists
-      //  Add the users informations to Contact/Friends Sections
-      if (data.hasOwnProperty(Name)) {
-        const NewFriends: FriendInformations = {
-          UID: data[Name] as string,
-          Nickname: Name,
-        };
-
-        const CreatedContact = await database
-          .collection('Database')
-          .doc('Users')
-          .collection(UID)
-          .doc('Contacts')
-          .collection('Friends')
-          .add(NewFriends);
-
-        if (CreatedContact) {
-          navigation.goBack();
-        }
-      }
-    } catch (error) {
-      console.error(error);
-    }
-
-    SetRequest(false);
+  const AddUsers = () => {
+    AddContact(Name, SetRequest, navigation);
   };
 
   return (
@@ -124,7 +55,7 @@ const AddContactScreen = ({ navigation }: any) => {
           ref={NameRef}
           value={Name}
           onChangeText={(e) => setName(e)}
-          onSubmitEditing={AddContact}
+          onSubmitEditing={AddUsers}
           placeholder="User Nickname"
           leftIcon={<Entypo size={24} name="users" color="black" />}
           style={styles.inputs}
@@ -133,7 +64,7 @@ const AddContactScreen = ({ navigation }: any) => {
         <Button
           title="Add Contacts"
           type="solid"
-          onPress={AddContact}
+          onPress={AddUsers}
           containerStyle={styles.button}
           disabled={Request}
         />

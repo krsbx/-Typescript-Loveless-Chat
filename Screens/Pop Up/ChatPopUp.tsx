@@ -1,22 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
-import { auth, database } from '../../Component/FirebaseSDK';
+import { auth, database, storage } from '../../Component/FirebaseSDK';
 import firebase from 'firebase';
+import { MoreChat } from '../../Component/ScreensInterface';
 
-type Params = {
-  id: string;
-  chatName: string;
-  currentMode: string;
-};
-
-type ToPass = {
-  SetVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  navigation: any;
-  params: Params;
-};
-
-const ChatPopUp = ({ SetVisible, navigation, params }: ToPass) => {
+const ChatPopUp = ({ SetVisible, navigation, params }: MoreChat) => {
   const DeleteChats = async () => {
     try {
       const ChatRef = database
@@ -26,18 +15,26 @@ const ChatPopUp = ({ SetVisible, navigation, params }: ToPass) => {
         .doc(params['id']);
 
       //Remove Chat Entrys
-      const listDocs = (await ChatRef.collection('message').get()).docs.map(
-        (doc) => doc.id
+      (
+        await ChatRef.collection('message').get({
+          source: 'server',
+        })
+      ).docs.forEach(
+        async (doc) => await ChatRef.collection('message').doc(doc.id).delete()
       );
 
-      listDocs.map(async (id) => {
-        await ChatRef.collection('message').doc(id).delete();
-      });
+      //Remove Chat Media
+      const MediaRef = storage
+        .ref(`Messages`)
+        .child(params['currentMode'])
+        .child(params['id']);
+
+      await MediaRef.delete();
 
       //Remove Chat Data
-      await ChatRef.delete().then(() => {
-        navigation.goBack();
-      });
+      await ChatRef.delete();
+
+      navigation.goBack();
     } catch (error) {
       console.error(error);
     }
@@ -55,9 +52,9 @@ const ChatPopUp = ({ SetVisible, navigation, params }: ToPass) => {
         member: firebase.firestore.FieldValue.arrayRemove(
           auth.currentUser?.uid as string
         ),
-      }).then(() => {
-        navigation.goBack();
       });
+
+      navigation.goBack();
     } catch (error) {
       console.error(error);
     }

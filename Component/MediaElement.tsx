@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
   SafeAreaView,
   View,
@@ -14,14 +14,15 @@ import {
   TakePictures,
   AskPermission,
 } from '../Utility/ImagePicker';
+import { MediaSets } from './ScreensInterface';
+import { TakeDocuments } from '../Utility/DocsPicker';
 
-type ToPass = {
-  Visible: boolean;
-  SetVisible: Dispatch<SetStateAction<boolean>>;
-  SetPictures: Dispatch<SetStateAction<string>>;
-};
-
-const MediaElement = ({ Visible, SetVisible, SetPictures }: ToPass) => {
+const MediaElement = ({
+  Visible,
+  SetVisible,
+  SetMedia,
+  SetDocs,
+}: MediaSets) => {
   useEffect(() => {
     AskPermission();
   }, []);
@@ -46,22 +47,34 @@ const MediaElement = ({ Visible, SetVisible, SetPictures }: ToPass) => {
               <TouchableOpacity
                 style={styles.MediaSelections}
                 onPress={() => {
-                  SelectPicture(SetPictures, false);
+                  TakeDocuments(SetDocs);
                   SetVisible(false);
                 }}
               >
-                <Fontisto name="photograph" size={40} color="black" />
-                <Text style={{ fontWeight: '800', marginTop: 10 }}>Galery</Text>
+                <Fontisto name="file-1" size={40} color="black" />
+                <Text style={{ fontWeight: '800', marginTop: 10 }}>
+                  Document
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.MediaSelections}
                 onPress={() => {
-                  TakePictures(SetPictures);
+                  TakePictures(SetMedia);
                   SetVisible(false);
                 }}
               >
                 <Fontisto name="camera" size={40} color="black" />
                 <Text style={{ fontWeight: '800', marginTop: 10 }}>Camera</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.MediaSelections}
+                onPress={() => {
+                  SelectPicture(SetMedia, false);
+                  SetVisible(false);
+                }}
+              >
+                <Fontisto name="photograph" size={40} color="black" />
+                <Text style={{ fontWeight: '800', marginTop: 10 }}>Galery</Text>
               </TouchableOpacity>
             </View>
           </View>

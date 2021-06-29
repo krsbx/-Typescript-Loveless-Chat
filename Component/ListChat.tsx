@@ -3,14 +3,7 @@ import { ListItem, Avatar } from 'react-native-elements';
 import { auth, database } from './FirebaseSDK';
 import { UseMode } from '../Component/ModeContext';
 import { MessageContext } from '../Component/DataInterface';
-
-type ToPass = {
-  id: string;
-  chatName: string;
-  chatMode: string;
-  enterChat: CallableFunction;
-  SetVisible: React.Dispatch<React.SetStateAction<boolean>>;
-};
+import { ChatEntry } from './ScreensInterface';
 
 const ListChat = ({
   id,
@@ -18,7 +11,7 @@ const ListChat = ({
   chatMode,
   enterChat,
   SetVisible,
-}: ToPass) => {
+}: ChatEntry) => {
   const [Chat, SetChat] = useState<MessageContext[]>([]);
 
   const { SetVisibleTab } = UseMode();
@@ -31,7 +24,6 @@ const ListChat = ({
       .doc(id)
       .collection('message')
       .orderBy('timestamp', 'desc')
-      .limit(1)
       .onSnapshot((snap) =>
         SetChat(snap.docs.map((doc) => doc.data() as MessageContext))
       );
@@ -43,7 +35,7 @@ const ListChat = ({
 
   const LastChat = () => {
     if (Chat[0]) {
-      return `${Chat[0].Nickname} : ${Chat[0].message}`;
+      return `${Chat[0]['Nickname']} : ${Chat[0]['Message']}`;
     } else {
       return '';
     }
@@ -60,7 +52,7 @@ const ListChat = ({
     >
       <Avatar
         source={{
-          uri: Chat?.[0]?.profile,
+          uri: Chat?.[0]?.Profile,
         }}
         rounded
         size="medium"

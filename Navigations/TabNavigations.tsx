@@ -14,6 +14,7 @@ import {
   UserInformations,
   NewNotificationResponse,
 } from '../Component/DataInterface';
+import { ChatParams } from '../Component/ScreensInterface';
 
 const Tab = createBottomTabNavigator();
 
@@ -99,13 +100,15 @@ const TabNav = ({ navigation }: any) => {
         (response: Notifications.NotificationResponse) => {
           const NewResponseType: NewNotificationResponse =
             response as unknown as NewNotificationResponse;
-          navigation.navigate('Chat', {
+
+          const Actions: ChatParams = {
             id: NewResponseType.notification.request.content.data['id'],
             chatName:
               NewResponseType.notification.request.content.data['chatName'],
             currentMode:
               NewResponseType.notification.request.content.data['currentMode'],
-          });
+          };
+          navigation.navigate('Chat', Actions);
         }
       );
 

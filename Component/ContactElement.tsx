@@ -1,15 +1,14 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { ListItem, Avatar } from 'react-native-elements';
+import { ContactsEntry } from './ScreensInterface';
 
-type ToPass = {
-  profile: string;
-  Nickname: string;
-  UID: string;
-  createChat: CallableFunction;
-};
-
-const ContactElement = ({ profile, Nickname, UID, createChat }: ToPass) => {
+const ContactElement = ({
+  profile,
+  Nickname,
+  UID,
+  createChat,
+}: ContactsEntry) => {
   return (
     <ListItem bottomDivider onPress={() => createChat(UID, Nickname)}>
       <Avatar source={{ uri: profile }} rounded size="medium" />

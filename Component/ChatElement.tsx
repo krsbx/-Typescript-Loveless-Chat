@@ -1,22 +1,16 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Linking } from 'react-native';
 import { Image, Avatar } from 'react-native-elements';
-
-type ToPass = {
-  sender: boolean;
-  Nickname: string;
-  message?: string;
-  profile: string;
-  picture?: string;
-};
+import { ChatBubbles } from './ScreensInterface';
 
 const ChatElement = ({
   sender,
   Nickname,
-  message,
-  profile,
-  picture,
-}: ToPass) => {
+  Message,
+  Profile,
+  Media,
+  Docs,
+}: ChatBubbles) => {
   const styler = sender === true ? styles.sender : styles.receiver;
 
   const toSend = (
@@ -32,15 +26,17 @@ const ChatElement = ({
       >
         {Nickname}
       </Text>
-      {picture !== '' && (
-        <Image
-          source={{ uri: `data:image/jpeg;base64,${picture}` }}
-          style={{ width: 200, height: 200 }}
-        />
+      {Docs?.URI !== undefined && (
+        <View>
+          <Text onPress={() => Linking.openURL(Docs?.URI)}>{Docs?.Name}</Text>
+        </View>
       )}
-      {message !== '' && (
+      {Media !== '' && (
+        <Image source={{ uri: Media }} style={{ width: 200, height: 200 }} />
+      )}
+      {Message !== '' && (
         <Text style={{ alignSelf: 'flex-end', color: 'white', marginRight: 5 }}>
-          {message}
+          {Message}
         </Text>
       )}
       <View
@@ -53,7 +49,7 @@ const ChatElement = ({
           padding: 3,
         }}
       >
-        <Avatar rounded size="small" source={{ uri: profile }} />
+        <Avatar rounded size="small" source={{ uri: Profile }} />
       </View>
     </View>
   );
@@ -71,14 +67,14 @@ const ChatElement = ({
       >
         {Nickname}
       </Text>
-      {picture !== '' && (
-        <Image source={{ uri: `data:image/jpeg;base64,${picture}` }} />
+      {Media !== '' && (
+        <Image source={{ uri: Media }} style={{ width: 200, height: 200 }} />
       )}
-      {message !== '' && (
+      {Message !== '' && (
         <Text
           style={{ alignSelf: 'flex-start', color: '#464646', marginLeft: 5 }}
         >
-          {message}
+          {Message}
         </Text>
       )}
       <View
@@ -91,7 +87,7 @@ const ChatElement = ({
           padding: 3,
         }}
       >
-        <Avatar rounded size="small" source={{ uri: profile }} />
+        <Avatar rounded size="small" source={{ uri: Profile }} />
       </View>
     </View>
   );

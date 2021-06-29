@@ -5,6 +5,7 @@ import {
   SafeAreaView,
   KeyboardAvoidingView,
   View,
+  Text,
   TextInput,
   TouchableOpacity,
   Keyboard,
@@ -13,35 +14,34 @@ import {
   NativeSyntheticEvent,
 } from 'react-native';
 import { Avatar, Image } from 'react-native-elements';
-import { auth, database, timestamp } from '../Component/FirebaseSDK';
+import { auth, database } from '../Component/FirebaseSDK';
 import { Ionicons, MaterialCommunityIcons, Entypo } from '@expo/vector-icons';
 import ChatElement from '../Component/ChatElement';
 import PopUpMenu from '../Component/PopupMenu';
 import ChatPopUp from '../Screens/Pop Up/ChatPopUp';
-import { sendPushNotification } from '../Component/NotificationsSDK';
 import {
   MessageContext,
-  UserInformations,
-  ChatMember,
   MessageData,
-  NotificationContent,
+  DocsObjects,
 } from '../Component/DataInterface';
 import MediaElement from '../Component/MediaElement';
+import { SendChat } from '../Utility/ChatUtility';
+import { ChatSections } from '../Component/ScreensInterface';
 
-const ChatScreen = ({ navigation, route }: any) => {
+const ChatScreen = ({ navigation, route }: ChatSections) => {
   const [Chat, SetChat] = useState<string>('');
   const [Visible, SetVisible] = useState(false);
   const [MediaPopUp, SetMediaPopUp] = useState(false);
   const [Message, SetMessage] = useState<MessageData[]>([]);
   const [Size, SetSize] = useState<number>(55);
-  const [Pictures, SetPictures] = useState<string>('');
-  const [MediaName, SetMediaName] = useState<string>('');
+  const [Media, SetMedia] = useState<string>('');
+  const [Docs, SetDocs] = useState<DocsObjects>({});
 
   const ScrollRef = useRef<FlatList>(null);
 
   useEffect(() => {
     navigation.setOptions({
-      title: route.params.chatName,
+      title: route['params']['chatName'],
       headerTitleStyle: {
         fontWeight: '800',
       },
@@ -69,7 +69,7 @@ const ChatScreen = ({ navigation, route }: any) => {
             <Avatar
               rounded
               size="small"
-              source={{ uri: Message?.[Message.length - 1]?.data['profile'] }}
+              source={{ uri: Message?.[Message.length - 1]?.data['Profile'] }}
             />
           </TouchableOpacity>
         </View>
@@ -90,20 +90,20 @@ const ChatScreen = ({ navigation, route }: any) => {
             <ChatPopUp
               SetVisible={SetVisible}
               navigation={navigation}
-              params={route.params}
+              params={route['params']}
             />
           </PopUpMenu>
         </View>
       ),
     });
-  }, [navigation, Message, Visible]);
+  }, [navigation, Visible]);
 
   useEffect(() => {
     const unsubscribe = database
       .collection('Database')
       .doc('Chats')
-      .collection(route.params.currentMode)
-      .doc(route.params.id)
+      .collection(route['params']['currentMode'])
+      .doc(route['params']['id'])
       .collection('message')
       .orderBy('timestamp', 'asc')
       .onSnapshot((snap) =>
@@ -122,69 +122,24 @@ const ChatScreen = ({ navigation, route }: any) => {
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [Message]);
 
   const ScrollToEnd = () => {
     ScrollRef.current?.scrollToEnd({ animated: true });
   };
 
-  const SendChat = async () => {
-    if (Chat === '' && Pictures === '') return;
-
-    const NewMessage: MessageContext = {
-      Nickname: auth.currentUser?.displayName as string,
-      email: auth.currentUser?.email as string,
-      message: Chat,
-      picture: Pictures,
-      profile: auth.currentUser?.photoURL as string,
-      timestamp: timestamp,
-    };
-
-    const ChatRef = database
-      .collection('Database')
-      .doc('Chats')
-      .collection(route.params.currentMode)
-      .doc(route.params.id);
-
-    await ChatRef.collection('message').add(NewMessage);
-
-    const Member: ChatMember = (await ChatRef.get()).data() as ChatMember;
-
-    Member['member'].forEach(async (UID) => {
-      if (UID !== auth.currentUser?.uid) {
-        const UserRef = database
-          .collection('Database')
-          .doc('Users')
-          .collection(UID)
-          .doc('Informations');
-
-        const UserInformations: UserInformations = (
-          await UserRef.get()
-        ).data() as UserInformations;
-
-        if (
-          UserInformations['Token'] !== undefined &&
-          UserInformations['Token'] !== ''
-        ) {
-          const Notifications: NotificationContent = {
-            to: UserInformations['Token'],
-            sound: 'default',
-            title: route.params.chatName,
-            body: `${auth.currentUser?.displayName} : ${Chat}`,
-            data: {
-              id: route.params.id,
-              chatName: route.params.chatName,
-              currentMode: route.params.currentMode,
-            },
-          };
-
-          sendPushNotification(Notifications);
-        }
-      }
-    });
-
-    SetChat('');
-    SetPictures('');
+  const Send = async () => {
+    await SendChat(
+      route['params']['chatName'],
+      Chat,
+      Media,
+      Docs,
+      route['params']['currentMode'],
+      route['params']['id'],
+      SetChat,
+      SetMedia,
+      SetDocs
+    );
   };
 
   const styles = StyleSheet.create({
@@ -226,7 +181,8 @@ const ChatScreen = ({ navigation, route }: any) => {
             <MediaElement
               Visible={MediaPopUp}
               SetVisible={SetMediaPopUp}
-              SetPictures={SetPictures}
+              SetMedia={SetMedia}
+              SetDocs={SetDocs}
             />
             <FlatList
               ref={ScrollRef}
@@ -240,17 +196,18 @@ const ChatScreen = ({ navigation, route }: any) => {
                   <ChatElement
                     key={Message['id']}
                     sender={
-                      Message['data']['email'] === auth.currentUser?.email
+                      Message['data']['Email'] === auth.currentUser?.email
                     }
                     Nickname={Message['data']['Nickname']}
-                    message={Message['data']['message']}
-                    profile={Message['data']['profile']}
-                    picture={Message['data']['picture']}
+                    Message={Message['data']['Message']}
+                    Profile={Message['data']['Profile']}
+                    Media={Message['data']['Media']}
+                    Docs={Message['data']['Docs']}
                   />
                 );
               }}
             />
-            {Pictures !== '' && (
+            {Docs.uri !== undefined && (
               <View
                 style={{
                   height: 120,
@@ -275,11 +232,42 @@ const ChatScreen = ({ navigation, route }: any) => {
                     name="cross"
                     size={24}
                     color="black"
-                    onPress={() => SetPictures('')}
+                    onPress={() => SetDocs({})}
+                  />
+                </TouchableOpacity>
+                <Text>{Docs.name as string}</Text>
+              </View>
+            )}
+            {Media !== '' && (
+              <View
+                style={{
+                  height: 120,
+                  flex: 1,
+                  position: 'absolute',
+                  bottom: Size,
+                  width: '100%',
+                }}
+              >
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  style={{
+                    backgroundColor: '#ffffff77',
+                    padding: 5,
+                    position: 'absolute',
+                    right: 0,
+                    zIndex: 1,
+                    borderRadius: 30,
+                  }}
+                >
+                  <Entypo
+                    name="cross"
+                    size={24}
+                    color="black"
+                    onPress={() => SetMedia('')}
                   />
                 </TouchableOpacity>
                 <Image
-                  source={{ uri: Pictures }}
+                  source={{ uri: Media }}
                   style={{
                     height: 100,
                   }}
@@ -311,7 +299,7 @@ const ChatScreen = ({ navigation, route }: any) => {
                 />
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={SendChat}
+                onPress={Send}
                 activeOpacity={0.5}
                 style={{
                   marginLeft: 10,

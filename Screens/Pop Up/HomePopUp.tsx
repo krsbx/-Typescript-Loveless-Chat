@@ -1,14 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
+import { MoreHome } from '../../Component/ScreensInterface';
 
-type ToPass = {
-  SetMode: React.Dispatch<React.SetStateAction<boolean>>;
-  SetVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  navigation: any;
-};
-
-const HomePopUp = ({ SetMode, SetVisible, navigation }: ToPass) => {
+const HomePopUp = ({ SetMode, SetVisible, navigation }: MoreHome) => {
   return (
     <>
       <TouchableOpacity

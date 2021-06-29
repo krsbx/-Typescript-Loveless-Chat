@@ -2,15 +2,14 @@ import React, { useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { ListItem, Avatar } from 'react-native-elements';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import { InvitationsData } from './ScreensInterface';
 
-type ToPass = {
-  AddRemove: CallableFunction;
-  Nickname: string;
-  Profile: string;
-  UID: string;
-};
-
-const MemberElement = ({ AddRemove, Nickname, Profile, UID }: ToPass) => {
+const MemberElement = ({
+  AddRemove,
+  Nickname,
+  Profile,
+  UID,
+}: InvitationsData) => {
   const [Selected, SetSelected] = useState(false);
   return (
     <ListItem

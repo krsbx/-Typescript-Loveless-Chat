@@ -14,9 +14,11 @@ import {
   ContactInformations,
   UserProfileURL,
 } from '../Component/DataInterface';
+import { UseMode } from '../Component/ModeContext';
 
 const ContactScreen = ({ navigation }: any) => {
   const [Contacts, SetContacts] = useState<ContactInformations[]>([]);
+  const { SetVisibleTab } = UseMode();
 
   const GetContacts = async () => {
     const UID: string = auth.currentUser?.uid as string;
@@ -28,7 +30,9 @@ const ContactScreen = ({ navigation }: any) => {
       .doc('Contacts')
       .collection('Friends');
 
-    const ContactRes = await ContactRef.get();
+    const ContactRes = await ContactRef.get({
+      source: 'server',
+    });
 
     const ConResult = ContactRes.docs.map((doc) => {
       const data = doc.data();
@@ -76,6 +80,8 @@ const ContactScreen = ({ navigation }: any) => {
   const EnterChat = (ID: string, Nickname: string) => {
     const CurrentNickname: string = auth.currentUser?.displayName as string;
 
+    SetVisibleTab(false);
+
     navigation.navigate('Chat', {
       id: ID,
       chatName: `${CurrentNickname}, ${Nickname}`,
@@ -103,7 +109,8 @@ const ContactScreen = ({ navigation }: any) => {
 
       CheckChatExist.docs.map((doc) => {
         const data = doc.data()['member'];
-        Exists = data.includes(selected);
+        Exists =
+          data.includes(selected) && data.includes(UserUID) ? doc.id : '';
       });
 
       if (!Exists) {

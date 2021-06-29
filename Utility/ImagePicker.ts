@@ -7,18 +7,18 @@ export const SelectPicture = async (
   profiles: boolean
 ) => {
   const result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    mediaTypes:
+      profiles === true
+        ? ImagePicker.MediaTypeOptions.Images
+        : ImagePicker.MediaTypeOptions.All,
     allowsEditing: true,
-    quality: 0.8,
+    quality: 0.65,
     base64: true,
     aspect: profiles === true ? [3, 3] : undefined,
   });
 
   if (!result.cancelled) {
-    console.log(result.uri);
-    console.log(result.base64 as string);
-    if (profiles == true) SetPictures(result.uri);
-    else SetPictures(result.base64 as string);
+    SetPictures(result.uri);
   }
 };
 
@@ -26,14 +26,14 @@ export const TakePictures = async (
   SetPictures: Dispatch<SetStateAction<string>>
 ) => {
   const result = await ImagePicker.launchCameraAsync({
-    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    mediaTypes: ImagePicker.MediaTypeOptions.All,
     allowsEditing: true,
-    quality: 0.8,
+    quality: 0.65,
     base64: true,
   });
 
   if (!result.cancelled) {
-    SetPictures(result.base64 as string);
+    SetPictures(result.uri);
   }
 };
 
